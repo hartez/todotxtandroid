@@ -115,6 +115,36 @@ class TaskUnitTests {
 
     // TODO contexts
 
-    // TODO metadata
+    @Test
+    fun task_with_metadata(){
+        val task = Task("2025-02-31 task data category:shopping")
+        assertEquals("shopping", task.metadata["category"])
+    }
 
+    @Test
+    fun task_with_multiple_metadata(){
+        val task = Task("2025-02-31 task data category:shopping mood:optimistic")
+        assertEquals("shopping", task.metadata["category"])
+        assertEquals("optimistic", task.metadata["mood"])
+    }
+
+    @Test
+    fun task_with_incorrect_metadata_format(){
+        val task = Task("2025-02-31 task data category: shopping")
+        assertEquals(null, task.metadata["category"])
+    }
+
+    @Test
+    fun task_with_duplicate_metadata_keys_overwrites(){
+        val task = Task("2025-02-31 task data category:shopping category:dinner")
+        assertEquals("dinner", task.metadata["category"])
+    }
+
+    @Test
+    fun task_due(){
+        // The due metadata gets lifted to its own property for convenience
+        val task = Task("2025-02-31 task data due:2025-03-14")
+        assertEquals("2025-03-14", task.metadata["due"])
+        assertEquals(LocalDate.of(2025, 3, 14), task.dueDate)
+    }
 }
