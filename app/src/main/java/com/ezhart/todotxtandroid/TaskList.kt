@@ -4,9 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -28,13 +26,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.AnnotatedString.Range
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,13 +34,13 @@ import androidx.compose.ui.unit.times
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
-import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskList(
     tasks: List<Task>,
-    onTaskToggle: (Task) -> Unit,
+    header: String,
+    onTaskSelect: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val maxHeightPx = with(LocalDensity.current) { Dimensions.TaskListHeaderExpanded.toPx() }
@@ -77,7 +69,7 @@ fun TaskList(
                 headerHeightPx.floatValue =
                     (headerHeightPx.floatValue + delta).coerceIn(minHeightPx, maxHeightPx)
 
-                return available;
+                return available
             }
         }
     }
@@ -90,12 +82,12 @@ fun TaskList(
             .nestedScroll(connection)
     ) {
 
-        stickyHeader { Header("All Tasks", tasks.count(), headerHeight) }
+        stickyHeader { Header(header, tasks.count(), headerHeight) }
 
         itemsIndexed(tasks) { index, task ->
             TaskItem(
                 task = task,
-                onToggle = { onTaskToggle(it) }
+                onSelect = { onTaskSelect(it) }
             )
             if (index < tasks.lastIndex)
                 HorizontalDivider(Modifier, thickness = 1.dp, color = Color.Gray)
@@ -103,8 +95,10 @@ fun TaskList(
     }
 }
 
+
+
 @Composable
-fun Header(filter: String, taskCount: Int, height: Dp, modifier: Modifier = Modifier) {
+fun Header(text: String, taskCount: Int, height: Dp, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .height(height)
@@ -116,9 +110,9 @@ fun Header(filter: String, taskCount: Int, height: Dp, modifier: Modifier = Modi
 
         Column (
             modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-            .wrapContentHeight(align = Alignment.CenterVertically)
+                .fillMaxSize()
+                .padding(8.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically)
         ){
 
             var fontSize = (scale * MaterialTheme.typography.headlineLarge.fontSize)
@@ -127,7 +121,7 @@ fun Header(filter: String, taskCount: Int, height: Dp, modifier: Modifier = Modi
             }
 
             Text(
-                text = filter,
+                text = text,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Left,
                 fontSize = fontSize
@@ -154,90 +148,6 @@ fun HeaderCompactPreview() {
     Header("All Tasks", 103, Dimensions.TaskListHeaderCompact)
 }
 
-@Composable
-fun TaskItem(
-    task: Task,
-    onToggle: (Task) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 16.dp),
-
-        ) {
-
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = displayPriority(task.priority),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        Column(Modifier.weight(15f)) {
-
-            val dueDate = task.dueDate
-            val maxLines = when (dueDate) {
-                null -> 2
-                else -> 1
-            }
-
-            Text(
-                text = highlightProjectsAndContexts(task),
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = maxLines,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            if (dueDate != null) {
-                Text(
-                    text = formatDueDate(dueDate),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-
-        }
-        Column(Modifier.weight(1f)) {}
-    }
-}
-
-fun displayPriority(priority: Char?): String {
-    return when (priority) {
-        null -> " "
-        else -> "$priority"
-    }
-}
-
-fun highlightProjectsAndContexts(task: Task): AnnotatedString {
-
-    val body = task.body
-    val all = task.projects.union(task.contexts)
-
-    val highlightRanges = all.map { s ->
-        Range(
-            SpanStyle(fontWeight = FontWeight.Bold),
-            body.indexOf(s),
-            body.indexOf(s) + s.length
-        )
-    }
-
-    return AnnotatedString(text = body, spanStyles = highlightRanges)
-}
-
-fun formatDueDate(dueDate: LocalDate): AnnotatedString {
-
-    // TODO See if there's something like moment.js we can grab to format the due dates nicer
-    // e.g. "Tomorrow", "Monday", etc.
-
-    return buildAnnotatedString {
-
-        if (LocalDate.now() > dueDate) {
-            pushStyle(SpanStyle(color = Color.Red))
-        }
-
-        append(dueDate.toString())
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun TaskListPreview() {
@@ -254,7 +164,7 @@ fun TaskListPreview() {
     )
 
     TodotxtAndroidTheme {
-        TaskList(previewTasks, { t -> Unit })
+        TaskList(previewTasks, "All Tasks", { })
     }
 }
 
