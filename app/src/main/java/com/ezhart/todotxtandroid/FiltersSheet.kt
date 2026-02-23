@@ -16,7 +16,9 @@ import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,7 +39,10 @@ import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FiltersSheet(open: Boolean, onClose: () -> Unit, onUpdateFilter: (Any) -> Unit) {
+fun FiltersSheet(
+    open: Boolean, onClose: () -> Unit,
+    onUpdateFilter: (Any) -> Unit, selectedFilter: Any
+) {
 
     val sheetState = rememberModalBottomSheetState()
 
@@ -50,34 +55,42 @@ fun FiltersSheet(open: Boolean, onClose: () -> Unit, onUpdateFilter: (Any) -> Un
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(Dimensions.SheetCornerRadius)
                     .clip(
                         RoundedCornerShape(
                             topStart = Dimensions.SheetCornerRadius,
                             topEnd = Dimensions.SheetCornerRadius
                         )
                     )
+                    .padding(0.dp, 16.dp, 0.dp, 0.dp)
             ) {
 
-                FilterOption("All Tasks", Icons.Outlined.Inbox, false) {
+                FilterOption("All Tasks", Icons.Outlined.Inbox, selectedFilter is AllTasksFilter) {
                     onUpdateFilter(AllTasksFilter)
                     onClose()
                 }
 
-                FilterOption("Due", Icons.Outlined.Timer, false) {
+                FilterOption("Due", Icons.Outlined.Timer, selectedFilter is DueFilter) {
                     onUpdateFilter(DueFilter)
                     onClose()
                 }
 
-                FilterOption("Pending", Icons.Outlined.CheckBoxOutlineBlank, false) {
+                FilterOption(
+                    "Pending",
+                    Icons.Outlined.CheckBoxOutlineBlank,
+                    selectedFilter is PendingFilter
+                ) {
                     onUpdateFilter(PendingFilter)
                     onClose()
                 }
 
-                FilterOption("Completed", Icons.Outlined.Check, false) {
+                FilterOption("Completed", Icons.Outlined.Check, selectedFilter is CompletedFilter) {
                     onUpdateFilter(CompletedFilter)
                     onClose()
                 }
+
+                HorizontalDivider()
+
+                Text("Gonna put the project/context filters here")
             }
         }
     }
@@ -85,16 +98,18 @@ fun FiltersSheet(open: Boolean, onClose: () -> Unit, onUpdateFilter: (Any) -> Un
 
 @Composable
 fun FilterOption(text: String, icon: ImageVector, selected: Boolean, onSelected: () -> Unit) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .background(
                 when (selected) {
-                    true -> Color.Green
+                    true -> MaterialTheme.colorScheme.primaryContainer // TODO Nicer color for this (need a appropriate one for dark mode, too)
                     else -> Color.Transparent
                 }
             )
+
+            .padding(8.dp, 8.dp)
             .clickable {
                 if (!selected) {
                     onSelected()
@@ -102,10 +117,11 @@ fun FilterOption(text: String, icon: ImageVector, selected: Boolean, onSelected:
             }
     )
     {
-        Icon(imageVector = icon, contentDescription = text)
+        Icon(imageVector = icon, contentDescription = text, tint = MaterialTheme.colorScheme.onPrimaryContainer)
         Spacer(Modifier.width(16.dp))
-        Text(text = text)
+        Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)
     }
+
 }
 
 @Preview(name = "Filter Sheet Light")
@@ -114,7 +130,27 @@ fun FilterOption(text: String, icon: ImageVector, selected: Boolean, onSelected:
 fun FilterSheetPreview() {
     TodotxtAndroidTheme {
         Surface {
-            FiltersSheet(true, {}, {})
+            FiltersSheet(true, {}, selectedFilter = AllTasksFilter, onUpdateFilter = {})
+        }
+    }
+}
+
+@Preview(name = "Filter Option Light")
+@Preview(name = "Filter Option Dark", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun FilterOptionPreview() {
+    TodotxtAndroidTheme {
+        Surface {
+            Column{
+                FilterOption(
+                    "All Tasks", Icons.Outlined.Inbox, true,
+                    { })
+
+                FilterOption(
+                    "All Tasks", Icons.Outlined.Inbox, false,
+                    { })
+            }
+
         }
     }
 }

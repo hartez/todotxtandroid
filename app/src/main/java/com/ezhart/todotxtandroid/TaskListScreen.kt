@@ -45,20 +45,26 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
             }
         ) { innerPadding ->
             TaskList(
-                filterTasks(t,filter), header(filter),
-                {  },
+                filterTasks(t, filter), header(filter),
+                { },
                 modifier = Modifier
                     .padding(innerPadding)
             )
 
-            FiltersSheet(isFilterSheetOpen, { isFilterSheetOpen = false }, onUpdateFilter = {f -> filter = f})
+            FiltersSheet(
+                isFilterSheetOpen,
+                { isFilterSheetOpen = false },
+                onUpdateFilter = { f -> filter = f },
+                filter
+            )
+
             NavSheet(isNavSheetOpen, { isNavSheetOpen = false }, onNavigateToSettings)
         }
     }
 }
 
-fun header(filter: Any) : String {
-    return when(filter){
+fun header(filter: Any): String {
+    return when (filter) {
         is ProjectFilter -> "Project ${filter.project}"
         is DueFilter -> "Due Tasks"
         is ContextFilter -> "Context ${filter.context}"
@@ -68,11 +74,11 @@ fun header(filter: Any) : String {
     }
 }
 
-fun filterTasks(tasks: List<Task>, filter: Any) : List<Task>{
-    val result = when(filter){
+fun filterTasks(tasks: List<Task>, filter: Any): List<Task> {
+    val result = when (filter) {
         is ProjectFilter -> tasks.filter { t -> t.projects.contains(filter.project) }
         is ContextFilter -> tasks.filter { t -> t.contexts.contains(filter.context) }
-        is DueFilter -> tasks.filter {t -> t.dueDate != null}
+        is DueFilter -> tasks.filter { t -> t.dueDate != null }
         is PendingFilter -> tasks.filter { t -> !t.completed }
         is CompletedFilter -> tasks.filter { t -> t.completed }
         else -> tasks
@@ -86,8 +92,7 @@ fun generateFakeTasks(count: Int): List<Task> {
     for (n in 0..count) {
         if (n % 9 == 0) {
             x.add(Task("x 2026-02-01 Task $n +shopping"))
-        }
-        else if (n % 5 == 0) {
+        } else if (n % 5 == 0) {
             x.add(Task("Task $n @testContext"))
         } else {
             x.add(Task("Task $n"))
