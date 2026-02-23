@@ -37,16 +37,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import androidx.compose.ui.zIndex
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 import java.time.LocalDate
-import kotlin.math.min
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -89,7 +85,7 @@ fun TaskList(
     val headerHeight = with(LocalDensity.current) { (headerHeightPx.floatValue).toDp() }
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .nestedScroll(connection)
     ) {
@@ -111,14 +107,12 @@ fun TaskList(
 fun Header(filter: String, taskCount: Int, height: Dp, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .zIndex(1f)
             .height(height)
-            .clipToBounds().background(MaterialTheme.colorScheme.background)
+            .clipToBounds()
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
-        // TODO Flip the scaling so the default size is headlineLarge and it scales
-        // down to headlineSmall and has that as the minimum
-        val scale = height / Dimensions.TaskListHeaderCompact
+        val scale = height / Dimensions.TaskListHeaderExpanded
 
         Column (
             modifier = Modifier
@@ -127,16 +121,15 @@ fun Header(filter: String, taskCount: Int, height: Dp, modifier: Modifier = Modi
             .wrapContentHeight(align = Alignment.CenterVertically)
         ){
 
-            var fontSize = (scale * MaterialTheme.typography.headlineSmall.fontSize)
-            if(fontSize.value > MaterialTheme.typography.headlineLarge.fontSize.value){
-                    fontSize = MaterialTheme.typography.headlineLarge.fontSize
+            var fontSize = (scale * MaterialTheme.typography.headlineLarge.fontSize)
+            if(fontSize.value < MaterialTheme.typography.headlineSmall.fontSize.value){
+                    fontSize = MaterialTheme.typography.headlineSmall.fontSize
             }
 
             Text(
                 text = filter,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Left,
-                //fontSize = (scale * MaterialTheme.typography.headlineSmall.fontSize)
                 fontSize = fontSize
             )
 

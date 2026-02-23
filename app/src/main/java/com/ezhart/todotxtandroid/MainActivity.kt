@@ -21,9 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +32,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
