@@ -25,7 +25,7 @@ import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TaskListScreen(onNavigateToSettings: () -> Unit) {
-    val t = generateFakeTasks(100)
+    val tasks = generateFakeTasks(100)
 
     var isFilterSheetOpen by remember { mutableStateOf(false) }
     var isNavSheetOpen by remember { mutableStateOf(false) }
@@ -45,13 +45,14 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
             }
         ) { innerPadding ->
             TaskList(
-                filterTasks(t, filter), header(filter),
+                filterTasks(tasks, filter), header(filter),
                 { },
                 modifier = Modifier
                     .padding(innerPadding)
             )
 
             FiltersSheet(
+                allProjects(tasks),
                 isFilterSheetOpen,
                 { isFilterSheetOpen = false },
                 onUpdateFilter = { f -> filter = f },
@@ -87,6 +88,10 @@ fun filterTasks(tasks: List<Task>, filter: Any): List<Task> {
     return result
 }
 
+fun allProjects(tasks: List<Task>): List<String> {
+    return tasks.flatMap({ t -> t.projects }).distinct().sorted()
+}
+
 fun generateFakeTasks(count: Int): List<Task> {
     val x = mutableListOf<Task>()
     for (n in 0..count) {
@@ -94,6 +99,8 @@ fun generateFakeTasks(count: Int): List<Task> {
             x.add(Task("x 2026-02-01 Task $n +shopping"))
         } else if (n % 5 == 0) {
             x.add(Task("Task $n @testContext"))
+        } else if (n % 4 == 0) {
+            x.add(Task("Task @testContext2 +project2"))
         } else {
             x.add(Task("Task $n"))
         }
