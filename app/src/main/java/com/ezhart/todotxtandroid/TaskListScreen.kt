@@ -53,6 +53,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
 
             FiltersSheet(
                 allProjects(tasks),
+                allContexts(tasks),
                 isFilterSheetOpen,
                 { isFilterSheetOpen = false },
                 onUpdateFilter = { f -> filter = f },
@@ -89,7 +90,11 @@ fun filterTasks(tasks: List<Task>, filter: Any): List<Task> {
 }
 
 fun allProjects(tasks: List<Task>): List<String> {
-    return tasks.flatMap({ t -> t.projects }).distinct().sorted()
+    return tasks.flatMap { t -> t.projects }.distinct().sorted()
+}
+
+fun allContexts(tasks: List<Task>): List<String>{
+    return tasks.flatMap { t -> t.contexts }.distinct().sorted()
 }
 
 fun generateFakeTasks(count: Int): List<Task> {

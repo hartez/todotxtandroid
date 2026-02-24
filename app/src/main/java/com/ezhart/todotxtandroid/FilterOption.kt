@@ -31,16 +31,16 @@ fun FilterOption(text: String, icon: ImageVector? = null, selected: Boolean, onS
             .background(
                 when (selected) {
                     true -> MaterialTheme.colorScheme.primaryContainer
-                    else -> Color.Transparent
+                    else -> MaterialTheme.colorScheme.background
                 }
             )
-
-            .padding(8.dp, 8.dp)
             .clickable {
                 if (!selected) {
                     onSelected()
                 }
             }
+            .padding(8.dp, 8.dp)
+
     )
     {
 
@@ -50,6 +50,8 @@ fun FilterOption(text: String, icon: ImageVector? = null, selected: Boolean, onS
                 contentDescription = text,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
+        } else{
+            Spacer(Modifier.width(32.dp))
         }
         Spacer(Modifier.width(16.dp))
         Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -69,6 +71,10 @@ fun FilterOptionPreview() {
 
                 FilterOption(
                     "All Tasks", Icons.Outlined.Inbox, false
+                ) { }
+
+                FilterOption(
+                    "+paintShed", null, false
                 ) { }
             }
 

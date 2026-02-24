@@ -3,12 +3,13 @@ package com.ezhart.todotxtandroid
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.Inbox
@@ -16,6 +17,8 @@ import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -46,12 +49,14 @@ enum class ExpandedOption {
 @Composable
 fun FiltersSheet(
     allProjects: List<String>,
+    allContexts: List<String>,
     open: Boolean, onClose: () -> Unit,
     onUpdateFilter: (Any) -> Unit, selectedFilter: Any
 ) {
-
-    val sheetState = rememberModalBottomSheetState()
-    var expandedOption by remember { mutableStateOf(ExpandedOption.None) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    var expandedOption by remember { mutableStateOf(ExpandedOption.Projects) }
 
     if (open) {
         ModalBottomSheet(
@@ -103,12 +108,11 @@ fun FiltersSheet(
 
                 ExpandingOption(
                     "Projects",
-                    Icons.AutoMirrored.Outlined.Label,
                     expandedOption == ExpandedOption.Projects,
                     {
-                        expandedOption = if(expandedOption == ExpandedOption.Projects) {
+                        expandedOption = if (expandedOption == ExpandedOption.Projects) {
                             ExpandedOption.None
-                        } else{
+                        } else {
                             ExpandedOption.Projects
                         }
                     },
@@ -116,6 +120,23 @@ fun FiltersSheet(
                     selectedOption(selectedFilter)
                 ) {
                     onUpdateFilter(ProjectFilter(it))
+                    onClose()
+                }
+
+                ExpandingOption(
+                    "Contexts",
+                    expandedOption == ExpandedOption.Contexts,
+                    {
+                        expandedOption = if (expandedOption == ExpandedOption.Contexts) {
+                            ExpandedOption.None
+                        } else {
+                            ExpandedOption.Contexts
+                        }
+                    },
+                    allContexts,
+                    selectedOption(selectedFilter)
+                ) {
+                    onUpdateFilter(ContextFilter(it))
                     onClose()
                 }
 
@@ -140,7 +161,13 @@ fun selectedOption(filter: Any): String? {
 fun FilterSheetPreview() {
     TodotxtAndroidTheme {
         Surface {
-            FiltersSheet(listOf(),true, {}, selectedFilter = AllTasksFilter, onUpdateFilter = {})
+            FiltersSheet(
+                listOf(),
+                listOf(),
+                true,
+                {},
+                selectedFilter = AllTasksFilter,
+                onUpdateFilter = {})
         }
     }
 }
