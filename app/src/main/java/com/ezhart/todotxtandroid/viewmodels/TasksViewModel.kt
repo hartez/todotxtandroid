@@ -21,6 +21,7 @@ import com.ezhart.todotxtandroid.data.Filter
 import com.ezhart.todotxtandroid.data.PendingFilter
 import com.ezhart.todotxtandroid.data.ProjectFilter
 import com.ezhart.todotxtandroid.data.Task
+import com.ezhart.todotxtandroid.data.TaskFileService
 import com.ezhart.todotxtandroid.dropbox.DropboxService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,7 @@ data class TaskListUIState(
 }
 
 class TasksViewModel(
+    private val taskFileService: TaskFileService,
     private val dropboxService: DropboxService,
     private val savedStateHandle: SavedStateHandle
 ) :
@@ -86,7 +88,12 @@ class TasksViewModel(
     fun loadTasks(shouldSync: Boolean = false) {
         viewModelScope.launch {
             isRefreshing = true
-            tasks.value = dropboxService.sync().toMutableList()
+
+            if(shouldSync){
+                dropboxService.sync()
+            }
+
+            tasks.value = taskFileService.loadTasksFromStorage().toMutableList()
 
             // TODO this is a hack, got to figure out how to fix this
             // if the update is too fast, the refreshing state will get stuck
@@ -102,7 +109,10 @@ class TasksViewModel(
                 val savedStateHandle = createSavedStateHandle()
                 val dropboxService =
                     (this[APPLICATION_KEY] as TodotxtAndroidApplication).dropboxService
+                val taskFileService =
+                    (this[APPLICATION_KEY] as TodotxtAndroidApplication).taskFileService
                 TasksViewModel(
+                    taskFileService = taskFileService,
                     dropboxService = dropboxService,
                     savedStateHandle = savedStateHandle
                 )

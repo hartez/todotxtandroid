@@ -2,18 +2,20 @@ package com.ezhart.todotxtandroid.dropbox
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ezhart.todotxtandroid.TAG
-import com.ezhart.todotxtandroid.data.Task
+import com.ezhart.todotxtandroid.data.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.Date
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
-class DropboxService(val applicationContext: Context) {
+class DropboxService(val applicationContext: Context,
+                     private val settings: SettingsRepository) {
 
     var awaitingSignInResponse = false
 
@@ -48,28 +50,15 @@ class DropboxService(val applicationContext: Context) {
         }
     }
 
-    fun loadTasksFromStorage(name: String): List<Task> {
-        val file = File(applicationContext.filesDir, name)
-
-        val lines = file.readLines()
-
-        val tasks = mutableListOf<Task>()
-
-        for(line in lines){
-            tasks.add(Task(line))
-        }
-
-        return tasks
-    }
-
-    suspend fun sync(): List<Task> {
-
+    suspend fun sync() {
         // TODO See comment below, the sync process needs to be fleshed out
         // TODO This service also needs the settings repository
         // TODO force lower path
-        val local = downloadTaskFile("/tdtest/todo.txt") ?: return listOf()
 
-        return loadTasksFromStorage(local.name)
+        // TODO Fix this like in TaskFileService if that ends up working
+        settings.todoPath.collectLatest {
+            downloadTaskFile(it)
+        }
     }
 
     @OptIn(ExperimentalTime::class)
@@ -93,6 +82,7 @@ class DropboxService(val applicationContext: Context) {
                     }
                 }
             }
+
             is GetFileMetaDataTaskResult.Error -> {
                 Log.e(TAG, metaDataResult.e.toString())
 
@@ -104,26 +94,10 @@ class DropboxService(val applicationContext: Context) {
         return null
     }
 
-    fun generateFakeTasks(count: Int): List<Task> {
-        val x = mutableListOf<Task>()
-        for (n in 0..count) {
-            if (n % 9 == 0) {
-                x.add(Task("x 2026-02-01 Task $n +shopping"))
-            } else if (n % 5 == 0) {
-                x.add(Task("Task $n @testContext"))
-            } else if (n % 4 == 0) {
-                x.add(Task("Task @testContext2 +project2"))
-            } else {
-                x.add(Task("Task $n"))
-            }
-        }
-
-        return x
-    }
 
     fun onResume() {
         authHandler.onResume()
-        if(awaitingSignInResponse) {
+        if (awaitingSignInResponse) {
             if (credentials.isAuthenticated()) {
                 signedInCallback()
                 signedInCallback = {}
