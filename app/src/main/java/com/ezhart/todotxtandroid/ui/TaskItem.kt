@@ -1,12 +1,10 @@
 package com.ezhart.todotxtandroid.ui
 
-import android.R
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,7 +15,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.AnnotatedString.Range
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,25 +42,27 @@ fun TaskItem(
         }
         Column(Modifier.weight(15f)) {
 
-            val dueDate = task.dueDate
-            val maxLines = when (dueDate) {
-                null -> 2
+            val displayDateLine = (task.dueDate != null || task.completed)
+
+            val maxLines = when (displayDateLine) {
+                false -> 2
                 else -> 1
             }
 
             Text(
-                text = highlightProjectsAndContexts(task, MaterialTheme.colorScheme.onSurfaceVariant),
+                text = highlightProjectsAndContexts(
+                    task,
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis
             )
 
-            // TODO Completed tasks should be displaying their completed date
-            // (and the due date remains, but in parentheses after the completed date)
-            if (dueDate != null) {
+            if (displayDateLine) {
                 Text(
-                    text = formatDueDate(dueDate, MaterialTheme.colorScheme.error),
+                    text = formatDateLine(task, MaterialTheme.colorScheme.error),
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
@@ -115,18 +114,30 @@ fun highlightProjectsAndContexts(task: Task, color: Color): AnnotatedString {
 }
 
 
-fun formatDueDate(dueDate: LocalDate, overdueColor: Color): AnnotatedString {
+fun formatDateLine(task: Task, overdueColor: Color): AnnotatedString {
 
     // TODO See if there's something like moment.js we can grab to format the due dates nicer
     // e.g. "Tomorrow", "Monday", etc.
 
     return buildAnnotatedString {
 
-        if (LocalDate.now() > dueDate) {
-            pushStyle(SpanStyle(color = overdueColor))
+        if (task.completed) {
+            append("Completed " + task.completedDate.toString())
         }
 
-        append(dueDate.toString())
+        val dueDate = task.dueDate
+
+        if (dueDate != null) {
+
+            if (task.completed) {
+                append(" (due $dueDate)")
+            } else if (LocalDate.now() > dueDate) {
+                pushStyle(SpanStyle(color = overdueColor))
+                append(dueDate.toString())
+            } else {
+                append(dueDate.toString())
+            }
+        }
     }
 }
 
@@ -176,6 +187,21 @@ fun OverdueTaskItemPreview() {
     TodotxtAndroidTheme {
         Surface {
             TaskItem(Task("2026-01-01 Schedule Goodwill pickup due:$due +GarageSale @phone")) {}
+        }
+    }
+}
+
+@Preview(name = "Completed Overdue Task Item Light")
+@Preview("Completed Overdue Task Item Dark", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun CompletedOverdueTaskItemPreview() {
+
+    val due = LocalDate.now().minusDays(5)
+    val completed = LocalDate.now()
+
+    TodotxtAndroidTheme {
+        Surface {
+            TaskItem(Task("x $completed 2026-01-01 Schedule Goodwill pickup due:$due +GarageSale @phone")) {}
         }
     }
 }
