@@ -67,13 +67,6 @@ fun FiltersSheet(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = Dimensions.SheetCornerRadius,
-                            topEnd = Dimensions.SheetCornerRadius
-                        )
-                    )
-                    .padding(0.dp, 16.dp, 0.dp, 0.dp)
             ) {
 
                 MenuOption("All Tasks", Icons.Outlined.Inbox, selectedFilter is AllTasksFilter) {

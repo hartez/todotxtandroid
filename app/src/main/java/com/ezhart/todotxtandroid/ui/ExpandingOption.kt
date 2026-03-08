@@ -46,13 +46,16 @@ fun ExpandingOption(
         {
             val expansionIcon = when (expanded) {
                 true -> Icons.Outlined.KeyboardArrowUp
-                else -> Icons.Outlined.KeyboardArrowDown
+                false -> Icons.Outlined.KeyboardArrowDown
             }
 
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.Label,
                 contentDescription = text,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = when(expanded) {
+                    true ->  MaterialTheme.colorScheme.onPrimaryContainer
+                    false -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
             Spacer(Modifier.width(16.dp))
             Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)

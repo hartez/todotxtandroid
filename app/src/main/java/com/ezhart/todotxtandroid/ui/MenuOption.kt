@@ -48,7 +48,10 @@ fun MenuOption(text: String, icon: ImageVector? = null, selected: Boolean, onSel
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = when(selected) {
+                    true ->  MaterialTheme.colorScheme.onPrimaryContainer
+                    false -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
         } else{
             Spacer(Modifier.width(32.dp))

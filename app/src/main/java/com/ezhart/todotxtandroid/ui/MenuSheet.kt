@@ -37,17 +37,10 @@ fun MenuSheet(
             onDismissRequest = { onClose() },
             sheetState = sheetState
         ) {
-            // Sheet content
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = Dimensions.SheetCornerRadius,
-                            topEnd = Dimensions.SheetCornerRadius
-                        )
-                    )
-                    .padding(0.dp)
             ) {
 
                 MenuOption(
