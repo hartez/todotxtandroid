@@ -1,5 +1,6 @@
 package com.ezhart.todotxtandroid.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
@@ -21,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -97,29 +98,28 @@ fun TaskList(
 }
 
 
-
 @Composable
 fun Header(text: String, taskCount: Int, height: Dp, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .height(height)
             .clipToBounds()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
 
         val scale = height / Dimensions.TaskListHeaderExpanded
         val padding = max(32.dp * scale, 8.dp)
 
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .wrapContentHeight(align = Alignment.CenterVertically)
-        ){
+        ) {
 
             var fontSize = (scale * MaterialTheme.typography.headlineLarge.fontSize)
-            if(fontSize.value < MaterialTheme.typography.headlineSmall.fontSize.value){
-                    fontSize = MaterialTheme.typography.headlineSmall.fontSize
+            if (fontSize.value < MaterialTheme.typography.headlineSmall.fontSize.value) {
+                fontSize = MaterialTheme.typography.headlineSmall.fontSize
             }
 
             Text(
@@ -130,7 +130,10 @@ fun Header(text: String, taskCount: Int, height: Dp, modifier: Modifier = Modifi
             )
 
             Text(
-                text = when(taskCount) { 1 -> "1 task" else -> "$taskCount tasks" },
+                text = when (taskCount) {
+                    1 -> "1 task"
+                    else -> "$taskCount tasks"
+                },
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.offset(0.dp, Dimensions.TaskListHeaderExpanded - height)
             )
@@ -138,19 +141,30 @@ fun Header(text: String, taskCount: Int, height: Dp, modifier: Modifier = Modifi
     }
 }
 
-@Preview(showBackground = true)
+@Preview("Header Large Light")
+@Preview("Header Large Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun HeaderLargePreview() {
-    Header("All Tasks", 103, Dimensions.TaskListHeaderExpanded)
+    TodotxtAndroidTheme {
+        Surface {
+            Header("All Tasks", 103, Dimensions.TaskListHeaderExpanded)
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@Preview("Header Compact Light")
+@Preview("Header Compact Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun HeaderCompactPreview() {
-    Header("All Tasks", 103, Dimensions.TaskListHeaderCompact)
+    TodotxtAndroidTheme {
+        Surface {
+            Header("All Tasks", 103, Dimensions.TaskListHeaderCompact)
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@Preview("Task List Light")
+@Preview("Task List Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun TaskListPreview() {
 
@@ -166,7 +180,9 @@ fun TaskListPreview() {
     )
 
     TodotxtAndroidTheme {
-        TaskList(previewTasks, "All Tasks", { })
+        Surface {
+            TaskList(previewTasks, "All Tasks", { })
+        }
     }
 }
 
