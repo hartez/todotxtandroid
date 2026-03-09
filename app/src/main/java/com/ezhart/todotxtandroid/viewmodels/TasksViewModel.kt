@@ -1,7 +1,6 @@
 package com.ezhart.todotxtandroid.viewmodels
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,15 +33,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-data class TaskListUIState(
-    val filteredTasks: List<Task> = listOf(),
-    val filter: Filter = AllTasksFilter,
-    val allContexts: List<String> = listOf(),
-    val allProjects: List<String> = listOf()
-) {
-    val filterLabel = filter.display()
-}
 
 class TasksViewModel(
     private val taskFileService: TaskFileService,
