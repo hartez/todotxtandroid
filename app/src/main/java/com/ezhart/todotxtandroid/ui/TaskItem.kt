@@ -36,7 +36,7 @@ fun TaskItem(
 
         Column(Modifier.weight(1f)) {
             Text(
-                text = displayPriority(task.priority),
+                text = task.taskPriority.display(),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -69,13 +69,6 @@ fun TaskItem(
 
         }
         Column(Modifier.weight(1f)) {}
-    }
-}
-
-fun displayPriority(priority: Char?): String {
-    return when (priority) {
-        null -> " "
-        else -> "$priority"
     }
 }
 

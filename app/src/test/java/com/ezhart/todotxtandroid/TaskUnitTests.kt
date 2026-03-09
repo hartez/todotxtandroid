@@ -13,7 +13,7 @@ class TaskUnitTests {
         val taskData = "(A) This is a test task"
 
         val task1 = Task(taskData)
-        assertEquals('A', task1.priority)
+        assertEquals('A', task1.taskPriority)
 
         // Validate the helper method
         assertEquals('A', Task.parsePriority(taskData))
@@ -22,19 +22,19 @@ class TaskUnitTests {
     @Test
     fun task_priority_must_be_uppercase() {
         val task2 = Task("(a) This is a test task")
-        assertEquals(null, task2.priority)
+        assertEquals(null, task2.taskPriority)
     }
 
     @Test
     fun task_priority_must_be_first() {
         val task2 = Task(" (A) test")
-        assertEquals(null, task2.priority)
+        assertEquals(null, task2.taskPriority)
     }
 
     @Test
     fun task_priority_must_be_letter() {
         val task1 = Task("(2) This is a test task")
-        assertEquals(null, task1.priority)
+        assertEquals(null, task1.taskPriority)
     }
 
     @Test

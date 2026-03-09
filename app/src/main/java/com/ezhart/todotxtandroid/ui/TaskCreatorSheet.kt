@@ -1,15 +1,12 @@
 package com.ezhart.todotxtandroid.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.PostAdd
@@ -23,7 +20,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -34,8 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ezhart.todotxtandroid.TAG
+import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +62,7 @@ fun TaskCreatorSheet(
                     TextField(
                         value = taskText.value,
                         onValueChange = { taskText.value = it },
-                        placeholder = {Text("enter task")},
+                        placeholder = { Text("enter task") },
                         minLines = 2,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = containerColor,
@@ -78,7 +75,9 @@ fun TaskCreatorSheet(
                     )
 
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            // TODO taskViewModel.add()
+                        },
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
                         Icon(
@@ -93,7 +92,9 @@ fun TaskCreatorSheet(
                 Row {
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            // TODO Create a priorities dialog popup
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Flag,
@@ -102,7 +103,9 @@ fun TaskCreatorSheet(
                     }
 
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            // TODO Create a projects/contexts dialog popup
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Label,
@@ -111,7 +114,9 @@ fun TaskCreatorSheet(
                     }
 
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            taskText.value = Task.editDueDate(taskText.value, LocalDate.now())
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Today,
@@ -122,7 +127,10 @@ fun TaskCreatorSheet(
                     Spacer(modifier = Modifier.weight(1f))
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            // TODO Need a task edit for completed
+                            // This one will also do a taskViewModel.add()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Done,
@@ -133,10 +141,7 @@ fun TaskCreatorSheet(
                 }
             }
         }
-
-
     }
-
 }
 
 
