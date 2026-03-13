@@ -15,13 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.AnnotatedString.Range
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.data.Task
+import com.ezhart.todotxtandroid.styleFor
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 import java.time.LocalDate
 
@@ -59,13 +58,7 @@ fun TaskItem(
                     MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium.merge(
-                    when {
-                        task.completed ->
-                            TextStyle(textDecoration = TextDecoration.LineThrough)
-                        else -> null
-                    }
-                ),
+                style = MaterialTheme.typography.bodyMedium.styleFor(task),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis
             )

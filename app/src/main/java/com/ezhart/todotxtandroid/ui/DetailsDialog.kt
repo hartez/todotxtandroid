@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.data.Task
+import com.ezhart.todotxtandroid.styleFor
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 import java.time.LocalDate
 
@@ -61,13 +62,7 @@ fun DetailsDialog(
                         text = task.taskPriority.display("No Priority"),
                         textAlign = TextAlign.Start,
                         modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.bodyMedium.merge(
-                            when {
-                                task.completed ->
-                                    TextStyle(textDecoration = TextDecoration.LineThrough)
-                                else -> null
-                            }
-                        )
+                        style = MaterialTheme.typography.bodyMedium.styleFor(task)
                     )
 
                     Text(
@@ -80,13 +75,7 @@ fun DetailsDialog(
                             true -> MaterialTheme.colorScheme.error
                             else -> MaterialTheme.colorScheme.onSurface
                         },
-                        style = MaterialTheme.typography.bodyMedium.merge(
-                            when {
-                                task.completed ->
-                                    TextStyle(textDecoration = TextDecoration.LineThrough)
-                                else -> null
-                            }
-                        )
+                        style = MaterialTheme.typography.bodyMedium.styleFor(task)
                     )
                 }
 
@@ -98,13 +87,7 @@ fun DetailsDialog(
                     Text(
                         text = task.body,
                         color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyLarge.merge(
-                            when {
-                                task.completed ->
-                                    TextStyle(textDecoration = TextDecoration.LineThrough)
-                                else -> null
-                            }
-                        )
+                        style = MaterialTheme.typography.bodyLarge.styleFor(task)
                     )
                 }
 
