@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -157,7 +158,7 @@ class TasksViewModel(
             val toAdd = newTaskEditor.text.toString()
 
             newTaskEditor.clearText()
-            isEditorOpen.value = false
+            isEditorOpen.value = true
 
             addTask(toAdd)
         } else {
@@ -234,14 +235,18 @@ class TasksViewModel(
         val taskText = Task.insertCreatedDate(task, LocalDate.now())
         tasks.value.add(Task(taskText))
 
+        tasks.update {
+            tasks.value.toMutableList().apply {
+                this.add(Task(taskText))
+            }
+        }
+
         viewModelScope.launch {
             taskFileService.writeTasksToStorage(tasks.value)
         }
     }
 
     private fun editTask(task: Task, updated: String): Task {
-        val taskList = tasks.value
-
         val taskText =
             when (val created = task.createdDate) {
                 null -> updated
@@ -249,8 +254,12 @@ class TasksViewModel(
             }
 
         val updatedTask = Task(taskText)
-        val index = taskList.indexOf(task)
-        taskList[index] = updatedTask
+
+        tasks.update {
+            tasks.value.toMutableList().apply {
+                this[this.indexOf(task)] = updatedTask
+            }
+        }
 
         viewModelScope.launch {
             taskFileService.writeTasksToStorage(tasks.value)
