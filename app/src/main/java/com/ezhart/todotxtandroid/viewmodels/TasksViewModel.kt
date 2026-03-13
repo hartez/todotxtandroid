@@ -77,7 +77,7 @@ class TasksViewModel(
     private val isEditorOpen = MutableStateFlow(false)
     private val newTaskEditor = TextFieldState()
     private val existingTaskEditor = TextFieldState()
-    private var editorMode : TaskEditorMode = TaskEditorMode.Create
+    private var editorMode: TaskEditorMode = TaskEditorMode.Create
 
     val editorUIState: StateFlow<TaskEditorUIState> = isEditorOpen.map { it ->
         TaskEditorUIState(
@@ -105,11 +105,11 @@ class TasksViewModel(
         selectedTask = null
     }
 
-    fun showDetails(){
+    fun showDetails() {
         isDetailsOpen = true
     }
 
-    fun dismissDetails(){
+    fun dismissDetails() {
         isDetailsOpen = false
         clearTaskSelection()
     }
@@ -135,6 +135,21 @@ class TasksViewModel(
 
     fun closeEditor() {
         isEditorOpen.value = false
+    }
+
+    fun toggleCompleted() {
+        val toEdit = selectedTask!!
+
+        selectedTask = null
+
+        val updated =
+            if (toEdit.completed) {
+                Task.markPending(toEdit.task)
+            } else {
+                Task.markCompleted(toEdit.task, LocalDate.now())
+            }
+
+        selectedTask = editTask(toEdit, updated)
     }
 
     fun commitTaskChanges() {
@@ -215,28 +230,33 @@ class TasksViewModel(
     }
 
     private fun addTask(task: String) {
-        viewModelScope.launch {
-            // Make sure the created date is in the task
-            val taskText = Task.insertCreatedDate(task, LocalDate.now())
+        // Make sure the created date is in the task
+        val taskText = Task.insertCreatedDate(task, LocalDate.now())
+        tasks.value.add(Task(taskText))
 
-            tasks.value.add(Task(taskText))
+        viewModelScope.launch {
             taskFileService.writeTasksToStorage(tasks.value)
         }
     }
 
-    private fun editTask(task: Task, updated: String) {
-        viewModelScope.launch {
-            val taskList = tasks.value
-            val taskText =
-                when (val created = task.createdDate) {
-                    null -> updated
-                    else -> Task.insertCreatedDate(updated, created)
-                }
+    private fun editTask(task: Task, updated: String): Task {
+        val taskList = tasks.value
 
-            val updatedTask = Task(taskText)
-            val index = taskList.indexOf(task)
-            taskList[index] = updatedTask
+        val taskText =
+            when (val created = task.createdDate) {
+                null -> updated
+                else -> Task.insertCreatedDate(updated, created)
+            }
+
+        val updatedTask = Task(taskText)
+        val index = taskList.indexOf(task)
+        taskList[index] = updatedTask
+
+        viewModelScope.launch {
+            taskFileService.writeTasksToStorage(tasks.value)
         }
+
+        return updatedTask
     }
 
     companion object {

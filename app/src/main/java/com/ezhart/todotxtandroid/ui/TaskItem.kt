@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.AnnotatedString.Range
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,7 +33,7 @@ fun TaskItem(
     Row(
 
         modifier = Modifier
-            .clickable(onClick = {onSelect(task)})
+            .clickable(onClick = { onSelect(task) })
             .fillMaxWidth()
             .padding(0.dp, 16.dp)
     ) {
@@ -58,7 +59,13 @@ fun TaskItem(
                     MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.merge(
+                    when {
+                        task.completed ->
+                            TextStyle(textDecoration = TextDecoration.LineThrough)
+                        else -> null
+                    }
+                ),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis
             )
@@ -95,17 +102,9 @@ fun highlightProjectsAndContexts(task: Task, color: Color): AnnotatedString {
         )
     }
 
-    val formatRanges = highlightRanges.toMutableList()
-    formatRanges.add(
-        Range(
-            SpanStyle(textDecoration = TextDecoration.LineThrough),
-            0, body.length
-        )
-    )
-
     return AnnotatedString(
         text = body,
-        spanStyles = formatRanges
+        spanStyles = highlightRanges
     )
 }
 

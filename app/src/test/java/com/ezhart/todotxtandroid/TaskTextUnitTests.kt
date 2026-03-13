@@ -1,5 +1,6 @@
 package com.ezhart.todotxtandroid
 
+import androidx.activity.compose.LocalActivity
 import com.ezhart.todotxtandroid.data.Priority
 import com.ezhart.todotxtandroid.data.None
 import com.ezhart.todotxtandroid.data.Task
@@ -119,6 +120,16 @@ class TaskTextUnitTests {
     }
 
     @Test
+    fun add_created_date_to_input_with_created_date(){
+        val task = "2024-11-07 This is a test"
+        val date = LocalDate.of(2025, 10, 7)
+        val updatedTaskText = Task.insertCreatedDate(task, date)
+
+        // If the task already has a created date, leave it alone
+        assertEquals( "2024-11-07 This is a test", updatedTaskText)
+    }
+
+    @Test
     fun add_created_date_to_completed_task_input(){
         val task = "x 2026-05-05 This is a test"
         val date = LocalDate.of(2025, 10, 7)
@@ -168,5 +179,41 @@ class TaskTextUnitTests {
         val updatedTask = Task.removeCreatedDate(task)
 
         assertEquals( "x 2026-05-06 This is a test", updatedTask)
+    }
+
+    @Test
+    fun mark_completed() {
+        val task = "2026-05-05 This is a test"
+        val completedDate = LocalDate.of(2026, 5, 6)
+        val updatedTask = Task.markCompleted(task, completedDate)
+
+        assertEquals( "x 2026-05-06 2026-05-05 This is a test", updatedTask)
+    }
+
+    @Test
+    fun mark_completed_already_complete() {
+        val task = "x 2026-05-06 2026-05-05 This is a test"
+        val completedDate = LocalDate.of(2026, 5, 6)
+        val updatedTask = Task.markCompleted(task, completedDate)
+
+        // Since the task is already complete, the update should be ignored. The only way to
+        // update the completed date is to mark the task pending and _then_ mark it completed again
+        assertEquals( "x 2026-05-06 2026-05-05 This is a test", updatedTask)
+    }
+
+    @Test
+    fun mark_pending() {
+        val task = "x 2026-05-06 2026-05-05 This is a test"
+        val updatedTask = Task.markPending(task)
+
+        assertEquals( "2026-05-05 This is a test", updatedTask)
+    }
+
+    @Test
+    fun mark_pending_already_pending() {
+        val task = "2026-05-05 This is a test"
+        val updatedTask = Task.markPending(task)
+
+        assertEquals( "2026-05-05 This is a test", updatedTask)
     }
 }

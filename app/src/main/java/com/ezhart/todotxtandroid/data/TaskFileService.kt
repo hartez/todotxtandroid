@@ -1,41 +1,47 @@
 package com.ezhart.todotxtandroid.data
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
 import kotlin.io.path.Path
 
 class TaskFileService(val applicationContext: Context, val settings: SettingsRepository) {
 
-    suspend fun loadTasksFromStorage(): ReadTaskListResult {
+    suspend fun loadTasksFromStorage(): ReadTaskListResult = withContext(Dispatchers.IO) {
         try {
             val fileName = getFileName(getTodoPath())
 
             val file = File(applicationContext.filesDir, fileName)
 
             if (!file.exists()) {
-                return ReadTaskListResult.Error(FileNotFoundException(file.path))
+                ReadTaskListResult.Error(FileNotFoundException(file.path))
             }
 
             val tasks = mutableListOf<Task>()
 
             file.readLines().mapTo(tasks) { Task(it) }
 
-            return ReadTaskListResult.Success(tasks)
+            ReadTaskListResult.Success(tasks)
         } catch (e: Exception) {
-            return ReadTaskListResult.Error(e)
+            ReadTaskListResult.Error(e)
         }
     }
 
-    suspend fun writeTasksToStorage(taskList:List<Task>)  {
-            val fileName = getFileName(getTodoPath())
-            val file = File(applicationContext.filesDir, fileName)
+    // TODO this should probably surface exceptions in a useful way
+    suspend fun writeTasksToStorage(taskList: List<Task>) = withContext(Dispatchers.IO) {
 
-            val textList = taskList.joinToString(transform = {task -> task.task}, separator = "\n")
+        val fileName = getFileName(getTodoPath())
 
-            file.writeText(textList)
+        val file = File(applicationContext.filesDir, fileName)
+
+        val textList =
+            taskList.joinToString(transform = { task -> task.task }, separator = "\n")
+
+        file.writeText(textList)
     }
 
     suspend fun getTodoPath(): String {

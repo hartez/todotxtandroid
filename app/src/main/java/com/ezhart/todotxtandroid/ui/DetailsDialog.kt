@@ -20,7 +20,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.data.Task
@@ -33,7 +35,8 @@ import java.time.LocalDate
 fun DetailsDialog(
     onDismissRequest: () -> Unit,
     task: Task,
-    onEditRequest: () -> Unit
+    onEditRequest: () -> Unit,
+    onToggleCompleted: () -> Unit
 ) {
 
     //gist.github.com/fvilarino/ebb3ba8cd643246671ad5ea9b5476d8c
@@ -57,7 +60,14 @@ fun DetailsDialog(
                     Text(
                         text = task.taskPriority.display("No Priority"),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium.merge(
+                            when {
+                                task.completed ->
+                                    TextStyle(textDecoration = TextDecoration.LineThrough)
+                                else -> null
+                            }
+                        )
                     )
 
                     Text(
@@ -69,7 +79,14 @@ fun DetailsDialog(
                         color = when (task.dueDate != null && task.dueDate < LocalDate.now()) {
                             true -> MaterialTheme.colorScheme.error
                             else -> MaterialTheme.colorScheme.onSurface
-                        }
+                        },
+                        style = MaterialTheme.typography.bodyMedium.merge(
+                            when {
+                                task.completed ->
+                                    TextStyle(textDecoration = TextDecoration.LineThrough)
+                                else -> null
+                            }
+                        )
                     )
                 }
 
@@ -80,20 +97,31 @@ fun DetailsDialog(
                 ) {
                     Text(
                         text = task.body,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyLarge.merge(
+                            when {
+                                task.completed ->
+                                    TextStyle(textDecoration = TextDecoration.LineThrough)
+                                else -> null
+                            }
+                        )
                     )
                 }
 
                 Row {
-                    TextButton(onClick = {}, modifier = Modifier.weight(1f)) {
+                    TextButton(onClick = { onToggleCompleted() }, modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "MARK COMPLETED",
+                            text = if (task.completed) {
+                                "MARK PENDING"
+                            } else {
+                                "MARK COMPLETED"
+                            },
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
 
-                    IconButton(onClick = {onEditRequest()}) {
+                    IconButton(onClick = { onEditRequest() }) {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = "Edit"
@@ -132,7 +160,7 @@ fun DetailsDialogPreview() {
             DetailsDialog(
                 { },
                 Task("2025-06-04 Buy apples @shopping +pie due:2025-06-06"),
-                {}
+                {}, onToggleCompleted = {}
             )
         }
     }

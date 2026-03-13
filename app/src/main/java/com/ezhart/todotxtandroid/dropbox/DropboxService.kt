@@ -56,6 +56,7 @@ class DropboxService(
         }
     }
 
+    // TODO almost certainly needs to be on the IO dispatcher
     suspend fun sync() {
         // TODO See comment below, the sync process needs to be fleshed out
         // TODO force lower path

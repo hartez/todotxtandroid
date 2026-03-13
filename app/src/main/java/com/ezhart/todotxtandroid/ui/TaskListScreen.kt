@@ -116,7 +116,8 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                     DetailsDialog(
                         { viewModel.dismissDetails() },
                         viewModel.selectedTask!!,
-                        onEditRequest = { viewModel.editSelectedTask() })
+                        onEditRequest = { viewModel.editSelectedTask() },
+                        onToggleCompleted = { viewModel.toggleCompleted() })
                 }
             }
         }

@@ -141,11 +141,17 @@ data class Task(val task: String) {
         }
 
         fun insertCreatedDate(task: String, createdDate: LocalDate): String {
-            if (task.startsWith('x')) {
+
+            val prospectiveTask = Task(task)
+            if(prospectiveTask.createdDate != null){
+                return task
+            }
+
+            if (prospectiveTask.completed) {
                 return "${task.substring(0, 12)} $createdDate ${task.substring(13)}"
             }
 
-            val priority = parsePriority(task)
+            val priority = prospectiveTask.taskPriority
 
             return if (priority == None) {
                 "$createdDate $task"
@@ -168,6 +174,22 @@ data class Task(val task: String) {
             } else {
                 task.substring(11)
             }
+        }
+
+        fun markCompleted(task: String, completedDate: LocalDate): String {
+            if(task.startsWith("x ")){
+                return task
+            }
+
+            return "x $completedDate $task"
+        }
+
+        fun markPending(task: String): String {
+            if(task.startsWith("x ")){
+                return task.substring(13)
+            }
+
+            return task
         }
     }
 }
