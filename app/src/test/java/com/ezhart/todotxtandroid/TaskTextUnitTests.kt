@@ -50,47 +50,47 @@ class TaskTextUnitTests {
     @Test
     fun add_tag(){
         val task = "This is a test task"
-        val project = "+project"
-        val updatedTask = Task.editTags(task = task, project)
+        val projects = listOf("+project")
+        val updatedTask = Task.editTags(task = task, projects)
 
-        assertTrue(Task(updatedTask).projects.contains(project))
+        assertTrue(Task(updatedTask).projects.containsAll(projects))
     }
 
     @Test
     fun add_tags(){
         val task = "This is a test task"
-        val project = "+project"
-        val context = "@context"
-        val updatedTaskText = Task.editTags(task = task, project, context)
+        val tags = listOf("+project", "@context")
+
+        val updatedTaskText = Task.editTags(task = task, tags)
         val updatedTask = Task(updatedTaskText)
 
-        assertTrue(updatedTask.projects.contains(project))
-        assertTrue(updatedTask.contexts.contains(context))
+        assertTrue(updatedTask.projects.contains("+project"))
+        assertTrue(updatedTask.contexts.contains("@context"))
     }
 
     @Test
     fun replace_tag(){
-        val task = "This is a test task +oldProject"
-        val project = "+project"
-        val updatedTaskText = Task.editTags(task = task, project)
+        val task = "This is a test+projectthisisatrick +project2 +project23 @context1 @context13 task +oldProject"
+        val projects = listOf("+project")
+        val updatedTaskText = Task.editTags(task = task, projects)
         val updatedTask = Task(updatedTaskText)
 
-        assertTrue(updatedTask.projects.contains(project))
+        assertTrue(updatedTask.projects.containsAll(projects))
         assertFalse(updatedTask.projects.contains("+oldProject"))
+        assertEquals("This is a test+projectthisisatrick task +project", updatedTaskText)
     }
 
     @Test
     fun replace_tags(){
         val task = "This is a test @oldContext task +oldProject"
-        val project = "+project"
-        val context = "@context"
-        val updatedTaskText = Task.editTags(task = task, context, project)
+        val tags = listOf("+project", "@context")
+        val updatedTaskText = Task.editTags(task = task, tags)
         val updatedTask = Task(updatedTaskText)
 
-        assertTrue(updatedTask.projects.contains(project))
+        assertTrue(updatedTask.projects.contains("+project"))
         assertFalse(updatedTask.projects.contains("+oldProject"))
 
-        assertTrue(updatedTask.contexts.contains(context))
+        assertTrue(updatedTask.contexts.contains("@context"))
         assertFalse(updatedTask.contexts.contains("@oldContext"))
     }
 

@@ -97,6 +97,17 @@ class TasksViewModel(
         )
     )
 
+    fun listTagsSelections(task: String) : Map<String, Boolean>{
+        val selectedContexts = Task.parseContexts(task)
+        val selectedProjects = Task.parseProjects(task)
+
+        val all = allProjects(tasks.value) + allContexts(tasks.value)
+
+        return all.associateWith { tag ->
+            (selectedContexts.contains(tag) || selectedProjects.contains(tag))
+        }
+    }
+
     fun selectTask(task: Task) {
         selectedTask = task
         showDetails()

@@ -102,7 +102,8 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                 },
                 {
                     viewModel.commitTaskChanges()
-                }
+                },
+                viewModel::listTagsSelections
             )
 
             if (viewModel.alert != null) {

@@ -47,13 +47,15 @@ import java.time.LocalDate
 fun TaskEditor(
     editorState: TaskEditorUIState,
     onClose: () -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    listTagsSelections: (String) -> Map<String, Boolean>
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
     var isPriorityDialogOpen by remember { mutableStateOf(false) }
+    var isTagDialogOpen by remember { mutableStateOf(false) }
 
     if (editorState.isOpen) {
 
@@ -105,18 +107,17 @@ fun TaskEditor(
                     IconButton(
                         onClick = { isPriorityDialogOpen = true }) {
                         Icon(
-                            imageVector = Icons.Outlined.Flag, contentDescription = "Priority"
+                            imageVector = Icons.Outlined.Flag,
+                            contentDescription = "Priority"
                         )
                     }
 
                     IconButton(
-                        onClick = {
-                            // TODO Create a projects/contexts dialog popup
-                        },
+                        onClick = { isTagDialogOpen = true },
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Label,
-                            contentDescription = "Project/Context"
+                            contentDescription = "Projects/Contexts"
                         )
                     }
 
@@ -155,9 +156,30 @@ fun TaskEditor(
                                 Task.parsePriority(textEditorState.text.toString()),
                                 onPrioritySelected = { taskPriority ->
                                     textEditorState.setTextAndPlaceCursorAtEnd(
-                                        Task.editPriority(textEditorState.text.toString(), taskPriority)
+                                        Task.editPriority(
+                                            textEditorState.text.toString(),
+                                            taskPriority
+                                        )
                                     )
 
+                                    isPriorityDialogOpen = false
+                                }
+                            )
+                        }
+                    }
+
+                    if (isTagDialogOpen) {
+                        Dialog(onDismissRequest = { isTagDialogOpen = false }) {
+                            TagsDialog(
+                                onDismissRequest = { isTagDialogOpen = false },
+                                options = listTagsSelections(textEditorState.text.toString()),
+                                onSubmit = { it ->
+                                    textEditorState.setTextAndPlaceCursorAtEnd(
+                                        Task.editTags(
+                                            textEditorState.text.toString(),
+                                            it.filter { selection -> selection.value }
+                                                .map { selection -> selection.key })
+                                    )
                                     isPriorityDialogOpen = false
                                 }
                             )
@@ -185,7 +207,7 @@ fun NewTaskPreview() {
     TodotxtAndroidTheme {
         Surface {
             TaskEditor(
-                state, {}, {}
+                state, {}, {}, { mapOf() }
             )
         }
     }
@@ -205,9 +227,7 @@ fun EditTaskPreview() {
     TodotxtAndroidTheme {
         Surface {
             TaskEditor(
-                state,
-                {},
-                {}
+                state, {}, {}, { mapOf() }
             )
         }
     }

@@ -42,7 +42,7 @@ fun PriorityDialog(
 
                 Row(
                     modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.background)
+                        .background(color = MaterialTheme.colorScheme.surface)
                         .fillMaxWidth()
                 ) {
                     Text(
@@ -50,7 +50,7 @@ fun PriorityDialog(
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier
-                            .padding(16.dp, 8.dp)
+                            .padding(16.dp, 8.dp) // TODO Put this padding and the tags dialog padding into dimensions
                     )
                 }
 
@@ -66,7 +66,7 @@ fun PriorityDialog(
                                         if (priority == selectedPriority) {
                                             MaterialTheme.colorScheme.primaryContainer
                                         } else {
-                                            MaterialTheme.colorScheme.background
+                                            MaterialTheme.colorScheme.surface
                                         }
                                 )
                         ) {
@@ -83,10 +83,6 @@ fun PriorityDialog(
             }
         }
     }
-
-
-    //.verticalScroll(rememberScrollState())
-
 }
 
 @Preview(name = "Priority Dialog Light")

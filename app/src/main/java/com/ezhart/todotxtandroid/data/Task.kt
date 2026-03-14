@@ -71,30 +71,30 @@ data class Task(val task: String) {
         }
 
         fun parseProjects(body: String): Set<String> {
-            val matches = projectsRegex.findAll(body) ?: return setOf()
+            val matches = projectsRegex.findAll(body)
             return matches.map { t -> t.value.trim() }.toSet()
         }
 
         fun parseContexts(body: String): Set<String> {
-            val matches = contextsRegex.findAll(body) ?: return setOf()
+            val matches = contextsRegex.findAll(body)
             return matches.map { t -> t.value.trim() }.toSet()
         }
 
-        fun editTags(task: String, vararg tags: String): String {
+        fun editTags(task: String, tags: List<String>): String {
             var result = task
 
             val projects = parseProjects(task)
             val contexts = parseContexts(task)
 
             for (project in projects) {
-                result = result.replace(project, "")
+                result = result.replace(" ${Regex.escape(project)}( |$)".toRegex(), " ")
             }
 
             for (context in contexts) {
-                result = result.replace(context, "")
+                result = result.replace(" ${Regex.escape(context)}( |$)".toRegex(), " ")
             }
 
-            return "$result ${tags.joinToString(" ")}"
+            return "${result.trim()} ${tags.joinToString(" ")}"
         }
 
         private fun tryParseDate(date: String?): LocalDate? {

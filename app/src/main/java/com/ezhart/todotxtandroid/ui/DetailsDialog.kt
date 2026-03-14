@@ -34,7 +34,7 @@ import java.time.LocalDate
 
 @Composable
 fun DetailsDialog(
-    onDismissRequest: () -> Unit,
+    onDismissRequest: () -> Unit, // Don't need this yet, but we will when we implement swipe actions
     task: Task,
     onEditRequest: () -> Unit,
     onToggleCompleted: () -> Unit
