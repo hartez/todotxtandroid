@@ -190,6 +190,15 @@ class TaskTextUnitTests {
     }
 
     @Test
+    fun mark_completed_when_priority() {
+        val task = "(A) 2026-05-05 This is a test"
+        val completedDate = LocalDate.of(2026, 5, 6)
+        val updatedTask = Task.markCompleted(task, completedDate)
+
+        assertEquals( "x 2026-05-06 2026-05-05 This is a test", updatedTask)
+    }
+
+    @Test
     fun mark_completed_already_complete() {
         val task = "x 2026-05-06 2026-05-05 This is a test"
         val completedDate = LocalDate.of(2026, 5, 6)

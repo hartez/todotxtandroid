@@ -66,6 +66,10 @@ class DropboxService(
 
     @OptIn(ExperimentalTime::class)
     suspend fun downloadTaskFile(path: String): File? {
+
+        // TODO Need to inform the user if there's no network
+
+
         when (val metaDataResult = api.getFileMetaData(path)) {
             is GetFileMetaDataTaskResult.Success -> {
                 // TODO this needs logic for determining whether a download is necessary

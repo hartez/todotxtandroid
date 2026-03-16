@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,13 +38,16 @@ import androidx.compose.ui.unit.times
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.viewmodels.SwipeOption
+import com.ezhart.todotxtandroid.viewmodels.TaskSwipeOptions
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskList(
     tasks: List<Task>,
     header: String,
-    onTaskSelect: (Task) -> Unit,
+    onSelect: (Task) -> Unit,
+    onToggleCompleted: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val maxHeightPx = with(LocalDensity.current) { Dimensions.TaskListHeaderExpanded.toPx() }
@@ -90,17 +94,26 @@ fun TaskList(
 
         stickyHeader { Header(header, tasks.count(), headerHeight) }
 
-        itemsIndexed(tasks) { index, task ->
+        itemsIndexed(tasks,
+            key = { _, t -> t.task }
+        ) { index, task ->
             TaskItem(
                 task = task,
-                onSelect = { onTaskSelect(it) }
+                onSelect = { onSelect(it) },
+                TaskSwipeOptions(
+                    endToStartOption = SwipeOption(
+                        "Toggle Complete",
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        Icons.Outlined.Check,
+                        { onToggleCompleted(it) })
+                )
             )
             if (index < tasks.lastIndex)
                 HorizontalDivider()
         }
     }
 }
-
 
 @Composable
 fun Header(text: String, taskCount: Int, height: Dp, modifier: Modifier = Modifier) {
@@ -185,7 +198,7 @@ fun TaskListPreview() {
 
     TodotxtAndroidTheme {
         Surface {
-            TaskList(previewTasks, "All Tasks", { })
+            TaskList(previewTasks, "All Tasks", {}, onToggleCompleted = {})
         }
     }
 }

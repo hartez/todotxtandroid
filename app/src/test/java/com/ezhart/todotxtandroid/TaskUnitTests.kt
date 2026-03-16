@@ -6,6 +6,7 @@ import com.ezhart.todotxtandroid.data.Task
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.experimental.results.PrintableResult
 import java.time.LocalDate
 
 class TaskUnitTests {
@@ -212,5 +213,23 @@ class TaskUnitTests {
     fun priority_none(){
         val pri = NoPriority
         assertEquals(" ", pri.display())
+    }
+
+    @Test
+    fun priority_none_sorts_after_any_letter(){
+        val none = NoPriority
+        val priority = Priority('Z')
+
+        assertTrue(none > priority)
+        assertTrue(priority < none)
+    }
+
+    @Test
+    fun priority_sorts_by_letter(){
+        val priority1 = Priority('A')
+        val priority2 = Priority('Z')
+
+        assertTrue(priority2 > priority1)
+        assertTrue(priority1 < priority2)
     }
 }

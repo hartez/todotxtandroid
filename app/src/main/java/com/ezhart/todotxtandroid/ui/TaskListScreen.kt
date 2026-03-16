@@ -76,7 +76,8 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
             ) {
                 TaskList(
                     uiState.filteredTasks, uiState.filterLabel,
-                    { viewModel.selectTask(it) }
+                    { viewModel.selectTask(it) },
+                    onToggleCompleted = { viewModel.toggleCompleted(it)}
                 )
             }
 
@@ -118,7 +119,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                         { viewModel.dismissDetails() },
                         viewModel.selectedTask!!,
                         onEditRequest = { viewModel.editSelectedTask() },
-                        onToggleCompleted = { viewModel.toggleCompleted() })
+                        onToggleCompleted = { viewModel.toggleCompleted(viewModel.selectedTask!!) })
                 }
             }
         }

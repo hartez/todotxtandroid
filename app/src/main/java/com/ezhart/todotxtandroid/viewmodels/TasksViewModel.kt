@@ -97,7 +97,7 @@ class TasksViewModel(
         )
     )
 
-    fun listTagsSelections(task: String) : Map<String, Boolean>{
+    fun listTagsSelections(task: String): Map<String, Boolean> {
         val selectedContexts = Task.parseContexts(task)
         val selectedProjects = Task.parseProjects(task)
 
@@ -149,19 +149,22 @@ class TasksViewModel(
         isEditorOpen.value = false
     }
 
-    fun toggleCompleted() {
-        val toEdit = selectedTask!!
+    fun toggleCompleted(task: Task) {
 
-        selectedTask = null
+        val selected = task == selectedTask
 
-        val updated =
-            if (toEdit.completed) {
-                Task.markPending(toEdit.task)
+        val updateTaskText =
+            if (task.completed) {
+                Task.markPending(task.task)
             } else {
-                Task.markCompleted(toEdit.task, LocalDate.now())
+                Task.markCompleted(task.task, LocalDate.now())
             }
 
-        selectedTask = editTask(toEdit, updated)
+        val updatedTask = editTask(task, updateTaskText)
+
+        if (selected) {
+            selectedTask = updatedTask
+        }
     }
 
     fun commitTaskChanges() {
@@ -229,7 +232,7 @@ class TasksViewModel(
             else -> tasks
         }
 
-        return result
+        return result.distinct().sortedWith(compareBy(Task::taskPriority, Task::completed))
     }
 
     private fun allProjects(tasks: List<Task>): List<String> {

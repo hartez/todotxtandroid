@@ -181,7 +181,13 @@ data class Task(val task: String) {
                 return task
             }
 
-            return "x $completedDate $task"
+            val priority = Task.parsePriority(task)
+
+            if(priority == NoPriority) {
+                return "x $completedDate $task"
+            }
+
+            return "x $completedDate ${task.substring(4)}"
         }
 
         fun markPending(task: String): String {

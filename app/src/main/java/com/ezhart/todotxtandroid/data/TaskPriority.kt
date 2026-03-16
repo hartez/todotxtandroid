@@ -1,6 +1,6 @@
 package com.ezhart.todotxtandroid.data
 
-sealed class TaskPriority {
+sealed class TaskPriority : Comparable<TaskPriority> {
     fun display(noneLabel: String = " "): String {
         return when (this) {
             is NoPriority -> noneLabel
@@ -26,8 +26,24 @@ sealed class TaskPriority {
     }
 }
 
-data object NoPriority : TaskPriority()
+data object NoPriority : TaskPriority() {
+    override fun compareTo(other: TaskPriority): Int {
+        if(other is Priority){
+            return 1
+        }
+
+        return 0
+    }
+}
+
 data class Priority(val letter: Char) : TaskPriority() {
+    override fun compareTo(other: TaskPriority): Int {
+        return when(other){
+            is NoPriority -> -1
+            is Priority -> this.letter.compareTo(other.letter)
+        }
+    }
+
     init {
         require(letter.isLetter() && letter.isUpperCase())
     }
