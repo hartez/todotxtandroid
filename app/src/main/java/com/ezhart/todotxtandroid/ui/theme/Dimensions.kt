@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 
 object Dimensions {
-    val TaskListHeaderExpanded = 150.dp
+    val TaskListHeaderExpanded = 130.dp
     val TaskListHeaderCompact = 50.dp
     val SheetCornerRadius = 8.dp
     val MenuOptionPadding = PaddingValues(16.dp, 16.dp, 16.dp, 16.dp)

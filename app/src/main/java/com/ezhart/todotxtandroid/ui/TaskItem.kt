@@ -20,12 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxDefaults
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -100,7 +98,7 @@ fun TaskItem(
             Column(Modifier.weight(1f)) {
                 Text(
                     text = task.taskPriority.display(),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
             Column(Modifier.weight(15f)) {
@@ -118,7 +116,7 @@ fun TaskItem(
                         MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium.styleFor(task),
+                    style = MaterialTheme.typography.bodyLarge.styleFor(task),
                     maxLines = maxLines,
                     overflow = TextOverflow.Ellipsis
                 )

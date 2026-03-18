@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +57,10 @@ class TasksViewModel(
     var isDetailsOpen by mutableStateOf(false)
         private set
 
-    var alert by mutableStateOf<String?>(null)
+//    var alert by mutableStateOf<String?>(null)
+//        private set
+
+    var messageUIState by mutableStateOf(MessageUIState())
         private set
 
     private var tasks: MutableStateFlow<MutableList<Task>> = MutableStateFlow(mutableStateListOf())
@@ -153,6 +157,11 @@ class TasksViewModel(
 
         val selected = task == selectedTask
 
+        val message = when (task.completed) {
+            true -> "Task marked pending"
+            false -> "Task marked complete"
+        }
+
         val updateTaskText =
             if (task.completed) {
                 Task.markPending(task.task)
@@ -165,16 +174,25 @@ class TasksViewModel(
         if (selected) {
             selectedTask = updatedTask
         }
+
+        showActionAlert(message, "Undo", { toggleCompleted(updatedTask) })
     }
 
     fun commitTaskChanges() {
         if (editorMode == TaskEditorMode.Create) {
             val toAdd = newTaskEditor.text.toString()
 
+            if (toAdd.isBlank()) {
+                return
+            }
+
             newTaskEditor.clearText()
 
             addTask(toAdd)
         } else {
+
+            // TODO How should we handle blank task updates? Is that a deletion? Do we ignore them?
+
             val oldTask = selectedTask!!
             val updatedTask = existingTaskEditor.text.toString()
 
@@ -187,13 +205,35 @@ class TasksViewModel(
         }
     }
 
-    fun showAlert(message: String, duration:Int = Int.MAX_VALUE) {
-        // TODO self-dismissing alerts
-        alert = message
+    fun showAlert(message: String) {
+        messageUIState = MessageUIState(
+            pending = true,
+            message,
+            { clearAlert() }
+        )
+    }
+
+    fun showError(message: String) {
+        messageUIState = MessageUIState(
+            pending = true,
+            message,
+            { clearAlert() },
+            duration = SnackbarDuration.Indefinite
+        )
+    }
+
+    fun showActionAlert(message: String, actionLabel: String, action: () -> Unit) {
+        messageUIState = MessageUIState(
+            pending = true,
+            text = message,
+            actionLabel = actionLabel,
+            action = action,
+            onDismiss = { clearAlert() }
+        )
     }
 
     fun clearAlert() {
-        alert = null
+        messageUIState = MessageUIState(pending = false)
     }
 
     fun loadTasks(shouldSync: Boolean = false) {
@@ -210,7 +250,7 @@ class TasksViewModel(
                     tasks.value = mutableListOf()
                     Log.e(TAG, result.e.toString())
 
-                    showAlert("Error reading tasks from local storage")
+                    showError("Error reading tasks from local storage")
                 }
             }
 
@@ -232,6 +272,11 @@ class TasksViewModel(
             is CompletedFilter -> tasks.filter { t -> t.completed }
             else -> tasks
         }
+
+        // TODO Filter out blank lines (is that a totally blank Task? There might accidentally be
+        // blank lines in the source task file; instead of crashing, we could have a property on
+        // Task like "isEmpty" and then ignore it here. Probably ignore it when we write the task
+        // file back, too.
 
         return result.distinct().sortedWith(compareBy(Task::taskPriority, Task::completed))
     }
@@ -257,6 +302,8 @@ class TasksViewModel(
         viewModelScope.launch {
             taskFileService.writeTasksToStorage(tasks.value)
         }
+
+        showAlert("Task created")
     }
 
     private fun editTask(task: Task, updated: String): Task {
