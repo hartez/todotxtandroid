@@ -57,9 +57,6 @@ class TasksViewModel(
     var isDetailsOpen by mutableStateOf(false)
         private set
 
-//    var alert by mutableStateOf<String?>(null)
-//        private set
-
     var messageUIState by mutableStateOf(MessageUIState())
         private set
 

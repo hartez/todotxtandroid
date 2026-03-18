@@ -1,6 +1,7 @@
 package com.ezhart.todotxtandroid.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ezhart.todotxtandroid.data.AllTasksFilter
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 import com.ezhart.todotxtandroid.viewmodels.TasksViewModel
 import kotlinx.coroutines.launch
@@ -77,6 +79,10 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                 }
             }
         }
+    }
+
+    BackHandler(uiState.filter != AllTasksFilter) {
+        viewModel.updateFilter(AllTasksFilter)
     }
 
     TodotxtAndroidTheme {
