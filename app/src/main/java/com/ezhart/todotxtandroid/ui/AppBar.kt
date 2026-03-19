@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,9 +19,10 @@ import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
 
 @Composable
-fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit) {
+fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit, showSearch: () -> Unit) {
     BottomAppBar(
-        modifier = Modifier.heightIn(max = 96.dp),
+        modifier = Modifier.heightIn(max = 128.dp),
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
         actions = {
 
             Column {
@@ -31,7 +33,7 @@ fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit) {
             Column(modifier = Modifier.weight(1.0f, true)) {}
             Column {
                 Row {
-                    IconButton(onClick = { /* navigate to search screen */ }
+                    IconButton(onClick = { showSearch() }
                     ) {
                         Icon(Icons.Outlined.Search, contentDescription = "Search")
                     }
@@ -51,7 +53,7 @@ fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit) {
 @Composable
 fun AppBarPreview() {
     TodotxtAndroidTheme {
-        AppBar({}, showSettings = {})
+        AppBar({}, showSettings = {}, {})
     }
 }
 

@@ -1,7 +1,8 @@
 package com.ezhart.todotxtandroid.ui
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,15 +13,12 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,12 +43,13 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
     val viewModel: TasksViewModel = viewModel(factory = TasksViewModel.Factory)
     val scope = rememberCoroutineScope()
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.taskListUIState.collectAsStateWithLifecycle()
     val editorUIState by viewModel.editorUIState.collectAsStateWithLifecycle()
     val messageUIState = viewModel.messageUIState
 
     var isFilterSheetOpen by remember { mutableStateOf(false) }
     var isMenuSheetOpen by remember { mutableStateOf(false) }
+    var isInTextFilterMode by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -73,6 +71,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                         messageUIState.action?.invoke()
                         messageUIState.onDismiss()
                     }
+
                     SnackbarResult.Dismissed -> {
                         messageUIState.onDismiss()
                     }
@@ -82,34 +81,54 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
     }
 
     BackHandler(uiState.filter != AllTasksFilter) {
+
+        // TODO handle search bar being open
+
         viewModel.updateFilter(AllTasksFilter)
     }
 
     TodotxtAndroidTheme {
         Scaffold(
-            snackbarHost = { SnackbarHost(hostState = snackBarHostState, snackbar = { it ->
-                Snackbar(it,
-                    modifier = Modifier.padding(horizontal = 32.dp)
-                )
-            }) },
+            snackbarHost = {
+                SnackbarHost(hostState = snackBarHostState, snackbar = {
+                    Snackbar(it, modifier = Modifier.padding(horizontal = 32.dp))
+                })
+            },
             contentWindowInsets = WindowInsets.statusBars,
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
-                AppBar(
-                    { isFilterSheetOpen = true },
-                    { isMenuSheetOpen = true }
-                )
+                Crossfade(
+                    modifier = Modifier.animateContentSize(),
+                    targetState = isInTextFilterMode,
+                    label = "Search"
+                ) { target ->
+                    if (!target) {
+                        AppBar(
+                            { isFilterSheetOpen = true },
+                            { isMenuSheetOpen = true },
+                            showSearch = { isInTextFilterMode = true }
+                        )
+                    } else {
+                        TextFilterBar(viewModel.textFilterEditor) {
+                            isInTextFilterMode = false
+                        }
+                    }
+                }
             },
+            // TODO hide FAB when in text filter mode
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
                         viewModel.editNewTask()
-                    },
+                    }
                 ) {
                     Icon(Icons.Outlined.Add, "Add Task")
                 }
             }
         ) { innerPadding ->
+
+            // TODO Figure out how to stop pushing the task list up when the keyboard is showing
+            // in text filter mode
 
             PullToRefreshBox(
                 isRefreshing = viewModel.isRefreshing,

@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -60,28 +61,33 @@ class TasksViewModel(
     var messageUIState by mutableStateOf(MessageUIState())
         private set
 
+    val textFilterEditor = TextFieldState()
+
     private var tasks: MutableStateFlow<MutableList<Task>> = MutableStateFlow(mutableStateListOf())
     private val filter = MutableStateFlow<Filter>(AllTasksFilter)
+    private val textFilter = snapshotFlow { textFilterEditor.text }
 
-    val uiState: StateFlow<TaskListUIState> = combine(filter, tasks) { filter, tasks ->
-        TaskListUIState(
-            filterTasks(tasks, filter),
-            filter,
-            allContexts(tasks),
-            allProjects(tasks)
+    val taskListUIState: StateFlow<TaskListUIState> =
+        combine(filter, tasks, textFilter) { filter, tasks, textFilter ->
+            TaskListUIState(
+                filterTasks(tasks, filter, textFilter),
+                filter,
+                textFilter,
+                allContexts(tasks),
+                allProjects(tasks)
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            initialValue = TaskListUIState()
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        initialValue = TaskListUIState()
-    )
 
     private val isEditorOpen = MutableStateFlow(false)
     private val newTaskEditor = TextFieldState()
     private val existingTaskEditor = TextFieldState()
     private var editorMode: TaskEditorMode = TaskEditorMode.Create
 
-    val editorUIState: StateFlow<TaskEditorUIState> = isEditorOpen.map { it ->
+    val editorUIState: StateFlow<TaskEditorUIState> = isEditorOpen.map {
         TaskEditorUIState(
             it, editorMode, when (editorMode) {
                 TaskEditorMode.Create -> newTaskEditor
@@ -111,7 +117,9 @@ class TasksViewModel(
 
     fun selectTask(task: Task, showDetails: Boolean = true) {
         selectedTask = task
-        showDetails()
+        if (showDetails) {
+            showDetails()
+        }
     }
 
     fun clearTaskSelection() {
@@ -172,7 +180,7 @@ class TasksViewModel(
             selectedTask = updatedTask
         }
 
-        showActionAlert(message, "Undo", { toggleCompleted(updatedTask) })
+        showActionAlert(message, "Undo") { toggleCompleted(updatedTask) }
     }
 
     fun commitTaskChanges() {
@@ -260,14 +268,22 @@ class TasksViewModel(
         }
     }
 
-    private fun filterTasks(tasks: List<Task>, filter: Filter): List<Task> {
-        val result = when (filter) {
+    private fun filterTasks(
+        tasks: List<Task>,
+        filter: Filter,
+        textFilter: CharSequence
+    ): List<Task> {
+        var result = when (filter) {
             is ProjectFilter -> tasks.filter { t -> t.projects.contains(filter.project) }
             is ContextFilter -> tasks.filter { t -> t.contexts.contains(filter.context) }
             is DueFilter -> tasks.filter { t -> t.dueDate != null }
             is PendingFilter -> tasks.filter { t -> !t.completed }
             is CompletedFilter -> tasks.filter { t -> t.completed }
             else -> tasks
+        }
+
+        if (!textFilter.isBlank()) {
+            result = result.filter { t -> t.body.contains(textFilter, ignoreCase = true) }
         }
 
         // TODO Filter out blank lines (is that a totally blank Task? There might accidentally be
