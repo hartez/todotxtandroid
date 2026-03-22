@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.DynamicTheme
 import com.ezhart.todotxtandroid.viewmodels.TasksViewModel
 import kotlinx.coroutines.launch
 
@@ -82,7 +82,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
         viewModel.back()
     }
 
-    TodotxtAndroidTheme {
+    DynamicTheme {
         Scaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackBarHostState, snackbar = {

@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.ezhart.todotxtandroid.data.Task
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 import com.ezhart.todotxtandroid.viewmodels.TaskEditorMode
 import com.ezhart.todotxtandroid.viewmodels.TaskEditorUIState
 import java.time.LocalDate
@@ -201,7 +201,7 @@ fun NewTaskPreview() {
         TextFieldState()
     )
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskEditor(
                 state, {}, {}, { mapOf() }
@@ -221,7 +221,7 @@ fun EditTaskPreview() {
         TextFieldState()
     ) // TODO Set up task text for this to display
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskEditor(
                 state, {}, {}, { mapOf() }

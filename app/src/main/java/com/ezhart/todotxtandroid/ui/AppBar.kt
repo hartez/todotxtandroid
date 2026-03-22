@@ -14,7 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 @Composable
 fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit, showSearch: () -> Unit) {
@@ -56,7 +56,7 @@ fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit, showSearch: () -> 
 @Preview("AppBar Dark", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun AppBarPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         AppBar({}, showSettings = {}, {})
     }
 }

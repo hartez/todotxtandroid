@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.times
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 import com.ezhart.todotxtandroid.viewmodels.SwipeOption
 import com.ezhart.todotxtandroid.viewmodels.TaskSwipeOptions
 
@@ -174,7 +174,7 @@ fun Header(text: String, subHeading: String, height: Dp, modifier: Modifier = Mo
 @Preview("Header Large Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun HeaderLargePreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             Header("All Tasks", "103", Dimensions.TaskListHeaderExpanded)
         }
@@ -185,7 +185,7 @@ fun HeaderLargePreview() {
 @Preview("Header Compact Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun HeaderCompactPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             Header("All Tasks", "103", Dimensions.TaskListHeaderCompact)
         }
@@ -208,7 +208,7 @@ fun TaskListPreview() {
         Task("(D) A long task that will probably extend more than 2 lines so it will have to be truncated so we can see what that looks like"),
     )
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskList(previewTasks, "All Tasks", "", {}, {}, {})
         }

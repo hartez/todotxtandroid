@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.ezhart.todotxtandroid.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -17,6 +18,7 @@ class SettingsStorage(private val context: Context) {
         val ACCOUNT_DISPLAY_NAME = stringPreferencesKey("account_display_name")
         val ACCOUNT_EMAIL = stringPreferencesKey("account_email")
         val TODO_PATH = stringPreferencesKey("todo_path")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     val accountDisplayName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -29,6 +31,14 @@ class SettingsStorage(private val context: Context) {
 
     val todoPath: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.TODO_PATH] ?: "/tdtest/todo.txt"
+    }
+
+    val themeMode: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
+        when(val themeMode = preferences[PreferencesKeys.THEME_MODE]){
+            null -> ThemeMode.System
+            "" -> ThemeMode.System
+            else -> enumValueOf<ThemeMode>(themeMode)
+        }
     }
 
     suspend fun setAccountDisplayName(accountDisplayName: String) {
@@ -48,6 +58,12 @@ class SettingsStorage(private val context: Context) {
             preferences[PreferencesKeys.TODO_PATH] = todoPath
         }
     }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME_MODE] = mode.toString()
+        }
+    }
 }
 
 class SettingsRepository(
@@ -56,6 +72,7 @@ class SettingsRepository(
     val accountDisplayName: Flow<String> = settingsStorage.accountDisplayName
     val accountEmail: Flow<String> = settingsStorage.accountEmail
     val todoPath: Flow<String> = settingsStorage.todoPath
+    val themeMode: Flow<ThemeMode> = settingsStorage.themeMode
 
     suspend fun setAccountDisplayName(accountDisplayName: String) {
         settingsStorage.setAccountDisplayName(accountDisplayName)
@@ -67,6 +84,10 @@ class SettingsRepository(
 
     suspend fun setTodoPath(todoPath: String) {
         settingsStorage.setTodoPath(todoPath)
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        settingsStorage.setThemeMode(mode)
     }
 }
 

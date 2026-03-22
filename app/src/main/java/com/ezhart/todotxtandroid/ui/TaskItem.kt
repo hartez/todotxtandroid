@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.styleFor
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 import com.ezhart.todotxtandroid.viewmodels.SwipeOption
 import com.ezhart.todotxtandroid.viewmodels.TaskSwipeOptions
 import kotlinx.coroutines.launch
@@ -270,7 +270,7 @@ fun SwipeActionBackground(
 @Preview("Task Item Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun TaskItemPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskItem(
                 Task("(B) Schedule Goodwill pickup +GarageSale @phone"),
@@ -285,7 +285,7 @@ fun TaskItemPreview() {
 @Preview("Completed Task Item Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun CompletedTaskItemPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskItem(
                 Task("x 2026-01-01 Schedule Goodwill pickup +GarageSale @phone"),
@@ -303,7 +303,7 @@ fun DueTaskItemPreview() {
 
     val due = LocalDate.now().plusDays(5)
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskItem(
                 Task("2026-01-01 Schedule Goodwill pickup due:$due +GarageSale @phone"),
@@ -321,7 +321,7 @@ fun OverdueTaskItemPreview() {
 
     val due = LocalDate.now().minusDays(5)
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskItem(
                 Task("2026-01-01 Schedule Goodwill pickup due:$due +GarageSale @phone"),
@@ -340,7 +340,7 @@ fun CompletedOverdueTaskItemPreview() {
     val due = LocalDate.now().minusDays(5)
     val completed = LocalDate.now()
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             TaskItem(
                 Task("x $completed 2026-01-01 Schedule Goodwill pickup due:$due +GarageSale @phone"),
@@ -373,7 +373,7 @@ fun SwipeBackgroundPreview() {
             {}
         ))
 
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             Column {
                 Row(modifier = Modifier.height(75.dp)) {

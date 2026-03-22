@@ -3,8 +3,6 @@ package com.ezhart.todotxtandroid.ui
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
@@ -14,11 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.ezhart.todotxtandroid.ui.theme.Dimensions
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +65,7 @@ fun MenuSheet(
 @Preview("Menu Sheet Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MenuSheetPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             MenuSheet(
                 true,

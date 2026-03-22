@@ -13,6 +13,7 @@ navigationCompose = "2.9.7"
 appcompat = "1.7.1"
 material3 = "1.4.0"
 foundationLayout = "1.10.5"
+foundation = "1.10.5"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx" }
@@ -40,6 +41,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

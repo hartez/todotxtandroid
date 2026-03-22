@@ -32,7 +32,7 @@ import com.ezhart.todotxtandroid.data.DueFilter
 import com.ezhart.todotxtandroid.data.Filter
 import com.ezhart.todotxtandroid.data.PendingFilter
 import com.ezhart.todotxtandroid.data.ProjectFilter
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 enum class ExpandedOption {
     None,
@@ -148,7 +148,7 @@ fun selectedOption(filter: Any): String? {
 @Preview("Filter Sheet Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun FilterSheetPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             FiltersSheet(
                 listOf(),

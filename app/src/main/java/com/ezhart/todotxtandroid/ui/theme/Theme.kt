@@ -1,6 +1,5 @@
 package com.ezhart.todotxtandroid.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +9,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ezhart.todotxtandroid.TodotxtAndroidApplication
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -34,7 +35,25 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun TodotxtAndroidTheme(
+fun DynamicTheme(
+    content: @Composable () -> Unit
+){
+    val app = LocalContext.current.applicationContext as TodotxtAndroidApplication
+    val settingsRepository = app.settingsRepository
+
+    val themeMode = settingsRepository.themeMode.collectAsStateWithLifecycle(ThemeMode.System)
+
+    val shouldBeDark = when(themeMode.value){
+        ThemeMode.System -> isSystemInDarkTheme()
+        ThemeMode.Light -> false
+        ThemeMode.Dark -> true
+    }
+
+    AppTheme(shouldBeDark) { content() }
+}
+
+@Composable
+fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -56,3 +75,4 @@ fun TodotxtAndroidTheme(
         content = content
     )
 }
+

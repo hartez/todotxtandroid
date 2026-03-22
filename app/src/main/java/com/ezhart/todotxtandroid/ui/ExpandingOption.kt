@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -23,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 @Composable
 fun ExpandingOption(
@@ -85,7 +83,7 @@ fun ExpandingOption(
 @Preview("Expanding Option Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ExpandingOptionPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             ExpandingOption(
                 "Contexts",
@@ -98,7 +96,7 @@ fun ExpandingOptionPreview() {
 @Preview("Expanding Option Open Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ExpandingOptionOpenPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             ExpandingOption(
                 "Projects",

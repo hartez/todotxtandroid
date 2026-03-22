@@ -20,14 +20,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.styleFor
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 import java.time.LocalDate
 
 // TODO Swipe actions (up to edit, left/right to move to next/prev, down to dismiss dialog)
@@ -137,7 +135,7 @@ fun DetailsDialog(
 @Preview("Details Dialog Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun DetailsDialogPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             DetailsDialog(
                 { },

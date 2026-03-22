@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhart.todotxtandroid.ui.theme.Dimensions
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 @Composable
 fun MenuOption(text: String, icon: ImageVector? = null, selected: Boolean, onSelected: () -> Unit) {
@@ -65,7 +65,7 @@ fun MenuOption(text: String, icon: ImageVector? = null, selected: Boolean, onSel
 @Preview(name = "Filter Option Dark", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MenuOptionPreview() {
-    TodotxtAndroidTheme {
+    AppTheme {
         Surface {
             Column {
                 MenuOption(

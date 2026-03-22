@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.ezhart.todotxtandroid.ui.theme.TodotxtAndroidTheme
+import com.ezhart.todotxtandroid.ui.theme.AppTheme
 
 @Composable
 fun TextFilterBar(
@@ -70,7 +70,7 @@ fun TextFilterBar(
 @Preview("FilterBar Dark", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun SearchBarPreviewText() {
-    TodotxtAndroidTheme {
+    AppTheme {
         TextFilterBar(TextFieldState()) {}
     }
 }

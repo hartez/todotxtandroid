@@ -16,6 +16,7 @@ import com.ezhart.todotxtandroid.TodotxtAndroidApplication
 import com.ezhart.todotxtandroid.data.SettingsRepository
 import com.ezhart.todotxtandroid.dropbox.DropboxService
 import com.ezhart.todotxtandroid.dropbox.GetCurrentAccountResult
+import com.ezhart.todotxtandroid.ui.theme.ThemeMode
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
@@ -29,6 +30,7 @@ class SettingsViewModel(
     var accountName = settingsRepository.accountDisplayName
     var accountEmail = settingsRepository.accountEmail
     var todoPath = settingsRepository.todoPath
+    var themeMode = settingsRepository.themeMode
 
     fun beginSignIn(context: Context) {
         dropboxService.signIn(context) {
@@ -68,6 +70,12 @@ class SettingsViewModel(
     fun updateTodoPath(todoPath: String) {
         viewModelScope.launch {
             settingsRepository.setTodoPath(todoPath)
+        }
+    }
+
+    fun updateThemeMode(mode: ThemeMode) {
+        viewModelScope.launch {
+            settingsRepository.setThemeMode(mode)
         }
     }
 
