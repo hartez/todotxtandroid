@@ -1,5 +1,7 @@
 package com.ezhart.todotxtandroid.ui
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,13 +95,7 @@ fun DetailsCard(
                     )
                 }
 
-                // TODO implement sharing
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = "Share"
-                    )
-                }
+                ShareButton(task.task, LocalContext.current)
             }
 
             Row {
@@ -110,6 +107,22 @@ fun DetailsCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ShareButton(task:String, context: Context){
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_TEXT, task)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+
+    IconButton(onClick = {context.startActivity(shareIntent, null)}) {
+        Icon(
+            imageVector = Icons.Outlined.Share,
+            contentDescription = "Share"
+        )
     }
 }
 
