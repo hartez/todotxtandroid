@@ -9,11 +9,11 @@ import com.ezhart.todotxtandroid.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-const val DATASTORE_NAME = "app_settings"
+const val APP_SETTINGS_STORE_NAME = "app_settings"
 
 class SettingsStorage(private val context: Context) {
 
-    private val Context.dataStore by preferencesDataStore(name = DATASTORE_NAME)
+    private val Context.dataStore by preferencesDataStore(name = APP_SETTINGS_STORE_NAME)
 
     private object PreferencesKeys {
         val ACCOUNT_DISPLAY_NAME = stringPreferencesKey("account_display_name")
@@ -36,7 +36,7 @@ class SettingsStorage(private val context: Context) {
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
-        when(val themeMode = preferences[PreferencesKeys.THEME_MODE]){
+        when (val themeMode = preferences[PreferencesKeys.THEME_MODE]) {
             null -> ThemeMode.System
             "" -> ThemeMode.System
             else -> enumValueOf<ThemeMode>(themeMode)
@@ -71,12 +71,14 @@ class SettingsStorage(private val context: Context) {
         }
     }
 
-    suspend fun setUseDynamicColor(useDynamicColor: Boolean){
+    suspend fun setUseDynamicColor(useDynamicColor: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.DYNAMIC_COLOR] = useDynamicColor
         }
     }
 }
+
+// TODO Really consider whether this additional layer is giving us anything, or if SettingsStorage shouldn't just _be_ the SettingsRepository
 
 class SettingsRepository(
     private val settingsStorage: SettingsStorage

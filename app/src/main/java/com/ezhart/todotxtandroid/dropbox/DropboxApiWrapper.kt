@@ -6,9 +6,11 @@ import com.dropbox.core.DbxRequestConfig
 import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.FileMetadata
+import com.dropbox.core.v2.files.WriteMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
@@ -55,16 +57,54 @@ class DropboxApiWrapper(
         }
     }
 
-    suspend fun getFileMetaData(path: String): GetFileMetaDataTaskResult = withContext(ioDispatcher) {
+    suspend fun upload(
+        applicationContext: Context,
+        localFileName: String,
+        remotePath: String,
+        revision: String
+    ): UploadFileTaskResult = withContext(ioDispatcher) {
+
         try {
-            val metadata = dropboxClient.files().getMetadata(path) as FileMetadata
-            GetFileMetaDataTaskResult.Success(metadata)
+            val file = File(applicationContext.filesDir, localFileName)
+
+            FileInputStream(file).use { inputStream ->
+                val fileMetadata = dropboxClient
+                    .files()
+                    .uploadBuilder(remotePath)
+
+                    // These next three settings make the remote conflict resolution work; if the
+                    // revision we pass in matches the one on Dropbox, then the file will be updated
+                    // on Dropbox. If not, then Dropbox will upload our local file as a "conflicted"
+                    // version (that's the auto rename setting). The "with strict conflict = false"
+                    // setting allows uploading if the remote file has been deleted or has the exact
+                    // content we're uploading.
+                    .withMode(WriteMode.update(revision))
+                    .withAutorename(true)
+                    .withStrictConflict(false)
+
+                    .uploadAndFinish(inputStream)
+                UploadFileTaskResult.Success(fileMetadata)
+            }
+
+
         } catch (e: DbxException) {
-            GetFileMetaDataTaskResult.Error(e)
+            UploadFileTaskResult.Error(e)
         } catch (e: IOException) {
-            GetFileMetaDataTaskResult.Error(e)
+            UploadFileTaskResult.Error(e)
         }
     }
+
+    suspend fun getFileMetadata(path: String): GetFileMetadataTaskResult =
+        withContext(ioDispatcher) {
+            try {
+                val metadata = dropboxClient.files().getMetadata(path) as FileMetadata
+                GetFileMetadataTaskResult.Success(metadata)
+            } catch (e: DbxException) {
+                GetFileMetadataTaskResult.Error(e)
+            } catch (e: IOException) {
+                GetFileMetadataTaskResult.Error(e)
+            }
+        }
 
     private suspend fun getFilesForFolder(folderPath: String): GetFilesApiResponse =
         withContext(Dispatchers.IO) {

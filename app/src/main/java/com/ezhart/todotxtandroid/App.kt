@@ -9,6 +9,7 @@ import com.ezhart.todotxtandroid.data.SettingsRepository
 import com.ezhart.todotxtandroid.data.SettingsStorage
 import com.ezhart.todotxtandroid.data.TaskFileService
 import com.ezhart.todotxtandroid.dropbox.DropboxService
+import com.ezhart.todotxtandroid.dropbox.SyncDataStorage
 import com.ezhart.todotxtandroid.ui.SettingsScreen
 import com.ezhart.todotxtandroid.ui.TaskListScreen
 import kotlinx.serialization.Serializable
@@ -34,6 +35,7 @@ fun App() {
 
 class TodotxtAndroidApplication : Application() {
     val settingsRepository: SettingsRepository by lazy { SettingsRepository(SettingsStorage(this)) }
-    val taskFileService: TaskFileService by lazy { TaskFileService(this, settingsRepository) }
-    val dropboxService: DropboxService by lazy { DropboxService(this, settingsRepository) }
+    val syncData: SyncDataStorage by lazy { SyncDataStorage(this) }
+    val taskFileService: TaskFileService by lazy { TaskFileService(this, settingsRepository, syncData) }
+    val dropboxService: DropboxService by lazy { DropboxService(this, settingsRepository, syncData) }
 }

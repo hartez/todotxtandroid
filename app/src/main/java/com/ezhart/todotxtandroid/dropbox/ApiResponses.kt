@@ -16,9 +16,14 @@ sealed interface DownloadFileTaskResult {
     class Error(val e: Exception) : DownloadFileTaskResult
 }
 
-sealed interface GetFileMetaDataTaskResult {
-    class Success(val result: FileMetadata) : GetFileMetaDataTaskResult
-    class Error(val e: Exception) : GetFileMetaDataTaskResult
+sealed interface UploadFileTaskResult {
+    class Success(val result: FileMetadata) : UploadFileTaskResult
+    class Error(val e: Exception) : UploadFileTaskResult
+}
+
+sealed interface GetFileMetadataTaskResult {
+    class Success(val result: FileMetadata) : GetFileMetadataTaskResult
+    class Error(val e: Exception) : GetFileMetadataTaskResult
 }
 
 sealed class GetFilesApiResponse {

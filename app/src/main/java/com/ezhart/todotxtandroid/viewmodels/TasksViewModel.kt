@@ -31,6 +31,7 @@ import com.ezhart.todotxtandroid.data.ReadTaskListResult
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.data.TaskFileService
 import com.ezhart.todotxtandroid.dropbox.DropboxService
+import com.ezhart.todotxtandroid.dropbox.SyncResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +41,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.FileNotFoundException
 import java.time.LocalDate
 
 class TasksViewModel(
@@ -271,16 +273,28 @@ class TasksViewModel(
             isRefreshing = true
 
             if (shouldSync) {
-                dropboxService.sync()
+                when(val syncResult = dropboxService.sync()){
+                    is SyncResult.NotConnected -> {
+                        Log.i(TAG, "No network connection, skipping remote sync.")
+                        showAlert("No network connection")
+                    }
+                    is SyncResult.Success -> {
+                        Log.i(TAG, syncResult.message)
+                    }
+                    is SyncResult.Conflict -> showAlert(syncResult.message)
+                    is SyncResult.Error -> showError(syncResult.e.message.toString())
+                }
             }
 
             when (val result = taskFileService.loadTasksFromStorage()) {
                 is ReadTaskListResult.Success -> tasks.value = result.tasks.toMutableList()
                 is ReadTaskListResult.Error -> {
                     tasks.value = mutableListOf()
-                    Log.e(TAG, result.e.toString())
 
-                    showError("Error reading tasks from local storage")
+                    when(result.e){
+                        is FileNotFoundException -> Log.e(TAG, result.e.toString())
+                        else ->  showError("Error reading tasks from local storage: ${result.e.message}")
+                    }
                 }
             }
 
