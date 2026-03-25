@@ -51,8 +51,10 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
     var isInTextFilterMode by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
 
+
+
     LaunchedEffect(Unit) {
-        viewModel.loadTasks()
+        viewModel.loadTasksAtStartup()
     }
 
     LaunchedEffect(messageUIState) {
@@ -120,7 +122,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
             PullToRefreshBox(
                 isRefreshing = viewModel.isRefreshing,
                 onRefresh = {
-                    viewModel.loadTasks(true)
+                    viewModel.loadTasks()
                 },
                 modifier = Modifier.padding(scaffoldPadding)
                     .consumeWindowInsets(scaffoldPadding)
@@ -152,7 +154,7 @@ fun TaskListScreen(onNavigateToSettings: () -> Unit) {
                 isMenuSheetOpen,
                 { isMenuSheetOpen = false },
                 onNavigateToSettings,
-                { viewModel.loadTasks(true) })
+                { viewModel.loadTasks() })
 
             TaskEditor(
                 editorUIState,

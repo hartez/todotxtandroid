@@ -17,6 +17,7 @@ import kotlin.io.path.Path
 
 sealed interface SyncResult {
     class NotConnected : SyncResult
+    class NotAuthenticated : SyncResult
     class Success(val message: String) : SyncResult
     class Conflict(val message: String) : SyncResult
     class Error(val e: Exception) : SyncResult
@@ -74,6 +75,10 @@ class DropboxService(
 
         if(!isOnline()){
             return@withContext SyncResult.NotConnected()
+        }
+
+        if(!isAuthenticated()){
+            return@withContext SyncResult.NotAuthenticated()
         }
 
         val (lastSyncRemotePath, lastSyncRemoteRevision, currentLocalRevision, lastSyncLocalRevision) = syncData.lastestSyncState.first()

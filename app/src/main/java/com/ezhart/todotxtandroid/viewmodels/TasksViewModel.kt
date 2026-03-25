@@ -28,6 +28,7 @@ import com.ezhart.todotxtandroid.data.Filter
 import com.ezhart.todotxtandroid.data.PendingFilter
 import com.ezhart.todotxtandroid.data.ProjectFilter
 import com.ezhart.todotxtandroid.data.ReadTaskListResult
+import com.ezhart.todotxtandroid.data.SettingsRepository
 import com.ezhart.todotxtandroid.data.Task
 import com.ezhart.todotxtandroid.data.TaskFileService
 import com.ezhart.todotxtandroid.dropbox.DropboxService
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,9 +49,12 @@ import java.time.LocalDate
 class TasksViewModel(
     private val taskFileService: TaskFileService,
     private val dropboxService: DropboxService,
+    private val settingsRepository: SettingsRepository,
     private val savedStateHandle: SavedStateHandle
 ) :
     ViewModel() {
+
+    var startupLoaded = false
 
     var isRefreshing by mutableStateOf(false)
         private set
@@ -268,7 +273,16 @@ class TasksViewModel(
         messageUIState = MessageUIState(pending = false)
     }
 
-    fun loadTasks(shouldSync: Boolean = false) {
+    fun loadTasksAtStartup() {
+        if (startupLoaded) return
+
+        viewModelScope.launch {
+            startupLoaded = true
+            loadTasks(settingsRepository.syncOnStart.first())
+        }
+    }
+
+    fun loadTasks(shouldSync: Boolean = true) {
         viewModelScope.launch {
             isRefreshing = true
 
@@ -283,6 +297,10 @@ class TasksViewModel(
                     }
                     is SyncResult.Conflict -> showAlert(syncResult.message)
                     is SyncResult.Error -> showError(syncResult.e.message.toString())
+                    is SyncResult.NotAuthenticated -> {
+                        Log.i(TAG, "Not authenticated to Dropbox, skipping remote sync.")
+                        showAlert("Not authenticated to Dropbox")
+                    }
                 }
             }
 
@@ -435,9 +453,12 @@ class TasksViewModel(
                     (this[APPLICATION_KEY] as TodotxtAndroidApplication).dropboxService
                 val taskFileService =
                     (this[APPLICATION_KEY] as TodotxtAndroidApplication).taskFileService
+                val settingsRepository =
+                    (this[APPLICATION_KEY] as TodotxtAndroidApplication).settingsRepository
                 TasksViewModel(
                     taskFileService = taskFileService,
                     dropboxService = dropboxService,
+                    settingsRepository = settingsRepository,
                     savedStateHandle = savedStateHandle
                 )
             }

@@ -55,6 +55,7 @@ fun SettingsScreen() {
     val todoPath by settingsViewModel.todoPath.collectAsStateWithLifecycle("")
     val themeMode by settingsViewModel.themeMode.collectAsStateWithLifecycle(ThemeMode.System)
     val useDynamicColor by settingsViewModel.useDynamicColor.collectAsStateWithLifecycle(false)
+    val syncOnStart by settingsViewModel.syncOnStart.collectAsStateWithLifecycle(false)
     val context = LocalContext.current
 
     DynamicTheme {
@@ -65,11 +66,13 @@ fun SettingsScreen() {
             todoPath,
             themeMode,
             useDynamicColor,
+            syncOnStart,
             settingsViewModel::signOut,
             onBeginSignIn = { settingsViewModel.beginSignIn(context) },
             settingsViewModel::updateTodoPath,
             onUpdateThemeMode = settingsViewModel::updateThemeMode,
-            onUpdateDynamicColor = settingsViewModel::updateUseDynamicColor
+            onUpdateDynamicColor = settingsViewModel::updateUseDynamicColor,
+            onUpdateSyncOnStart = settingsViewModel::updateSyncOnStart
         )
     }
 }
@@ -83,11 +86,13 @@ fun SettingsContent(
     todoPath: String,
     themeMode: ThemeMode,
     useDynamicColor: Boolean,
+    syncOnStart: Boolean,
     onSignOut: () -> Unit,
     onBeginSignIn: () -> Unit,
     onUpdateTodoPath: (String) -> Unit,
     onUpdateThemeMode: (ThemeMode) -> Unit,
-    onUpdateDynamicColor: (Boolean) -> Unit
+    onUpdateDynamicColor: (Boolean) -> Unit,
+    onUpdateSyncOnStart: (Boolean) -> Unit
 ) {
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -153,6 +158,12 @@ fun SettingsContent(
                             onUpdateTodoPath(path)
                         })
                 }
+
+                SettingSwitch(
+                    "Sync on application start",
+                    onToggle = { onUpdateSyncOnStart(it) },
+                    syncOnStart
+                )
             }
 
             Section(title = "Appearance") {
@@ -383,8 +394,10 @@ fun SettingsContentPreview() {
                 "/todo/todo.txt",
                 ThemeMode.Light,
                 false,
+                syncOnStart = false,
                 { },
                 onBeginSignIn = { },
+                { },
                 { },
                 { },
                 { }

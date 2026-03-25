@@ -21,6 +21,7 @@ class SettingsRepository(private val context: Context) {
         val TODO_PATH = stringPreferencesKey("todo_path")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val SYNC_ON_START = booleanPreferencesKey("sync_on_start")
     }
 
     val accountDisplayName: Flow<String> = context.dataStore.data.map { preferences ->
@@ -45,6 +46,10 @@ class SettingsRepository(private val context: Context) {
 
     val useDynamicColor: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.DYNAMIC_COLOR] ?: false
+    }
+
+    val syncOnStart: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.SYNC_ON_START] ?: false
     }
 
     suspend fun setAccountDisplayName(accountDisplayName: String) {
@@ -74,6 +79,12 @@ class SettingsRepository(private val context: Context) {
     suspend fun setUseDynamicColor(useDynamicColor: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.DYNAMIC_COLOR] = useDynamicColor
+        }
+    }
+
+    suspend fun setSyncOnStart(syncOnStart: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SYNC_ON_START] = syncOnStart
         }
     }
 }

@@ -32,6 +32,7 @@ class SettingsViewModel(
     var todoPath = settingsRepository.todoPath
     var themeMode = settingsRepository.themeMode
     var useDynamicColor = settingsRepository.useDynamicColor
+    var syncOnStart = settingsRepository.syncOnStart
 
     fun beginSignIn(context: Context) {
         dropboxService.signIn(context) {
@@ -83,6 +84,12 @@ class SettingsViewModel(
     fun updateUseDynamicColor(useDynamicColor: Boolean) {
         viewModelScope.launch {
             settingsRepository.setUseDynamicColor(useDynamicColor)
+        }
+    }
+
+    fun updateSyncOnStart(syncOnStart: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setSyncOnStart(syncOnStart)
         }
     }
 
