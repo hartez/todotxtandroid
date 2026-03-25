@@ -3,6 +3,7 @@ package com.ezhart.todotxtandroid.ui
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.MoreVert
@@ -15,11 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ezhart.todotxtandroid.ui.theme.AppTheme
+import com.ezhart.todotxtandroid.ui.theme.Dimensions
 
 @Composable
-fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit, showSearch: () -> Unit) {
+fun AppBar(
+    showFilters: () -> Unit,
+    showSettings: () -> Unit,
+    showSearch: () -> Unit
+) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.height(Dimensions.AppBarHeight),
         actions = {
 
             Column {
@@ -30,7 +37,9 @@ fun AppBar(showFilters: () -> Unit, showSettings: () -> Unit, showSearch: () -> 
                     )
                 }
             }
+
             Column(modifier = Modifier.weight(1.0f, true)) {}
+
             Column {
                 Row {
                     IconButton(onClick = { showSearch() }
