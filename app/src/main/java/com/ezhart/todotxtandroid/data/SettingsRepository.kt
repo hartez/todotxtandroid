@@ -35,7 +35,7 @@ class SettingsRepository(private val context: Context) {
     }
 
     val todoPath: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[PreferencesKeys.TODO_PATH] ?: "/tdtest/todo.txt"
+        preferences[PreferencesKeys.TODO_PATH] ?: "/todo/todo.txt"
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
